@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SG Arquitectura — Landing Page (Claude Environment)</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Serif:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ─── TOKENS ─── */
+:root {
+  --red:    #A82132;
+  --dark:   #111111;
+  --carbon: #222222;
+  --mid:    #3A3A3A;
+  --steel:  #4A7FA0;
+  --white:  #F5F6F7;
+  --muted:  #888;
+  --mono:   'IBM Plex Mono', monospace;
+  --serif:  'IBM Plex Serif', serif;
+}
+
+body { background:#0D0D0B; font-family:var(--mono); color:var(--white); }
+
+/* ─── SHELL ─── */
+.shell { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  background:#141412;
+  border-right:1px solid rgba(255,255,255,0.06);
+  display:flex; flex-direction:column;
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+}
+.sidebar-top {
+  padding:20px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.sidebar-logo { font-size:11px; font-weight:500; letter-spacing:0.1em; color:var(--white); }
+.sidebar-logo span { color:var(--red); }
+.sidebar-sub { font-size:9px; color:var(--muted); letter-spacing:0.12em; margin-top:4px; }
+
+.sidebar-section { padding:16px 20px 8px; }
+.sidebar-section-title {
+  font-size:8px; letter-spacing:0.2em; text-transform:uppercase;
+  color:var(--muted); margin-bottom:10px;
+}
+
+/* Nav items */
+.nav-item {
+  display:flex; align-items:center; gap:10px;
+  padding:8px 10px; cursor:pointer;
+  font-size:11px; color:rgba(245,246,247,0.5);
+  border:none; background:none; width:100%;
+  text-align:left; transition:all 0.15s; border-radius:2px;
+  letter-spacing:0.04em;
+}
+.nav-item:hover { color:var(--white); background:rgba(255,255,255,0.04); }
+.nav-item.active { color:var(--white); background:rgba(168,33,50,0.12); }
+.nav-item .nav-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:rgba(255,255,255,0.15); flex-shrink:0;
+  transition:background 0.15s;
+}
+.nav-item.active .nav-dot { background:var(--red); }
+.nav-item .nav-status {
+  margin-left:auto; font-size:8px; letter-spacing:0.1em;
+  color:var(--muted);
+}
+.nav-item.done .nav-status { color:#5cb88a; }
+.nav-item.pending .nav-status { color:#e0a83a; }
+
+/* Color customizer */
+.color-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.color-label { font-size:10px; color:rgba(245,246,247,0.4); flex:1; }
+.color-swatch {
+  width:24px; height:24px; border:1px solid rgba(255,255,255,0.1);
+  cursor:pointer; position:relative; flex-shrink:0;
+}
+.color-swatch input[type=color] {
+  position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%;
+}
+
+/* Status badges */
+.status-row { display:flex; gap:6px; padding:0 20px 16px; flex-wrap:wrap; }
+.badge-stat {
+  font-size:8px; letter-spacing:0.1em; text-transform:uppercase;
+  padding:3px 8px; border:0.5px solid;
+}
+.badge-stat.live { border-color:#5cb88a; color:#5cb88a; }
+.badge-stat.wip  { border-color:#e0a83a; color:#e0a83a; }
+.badge-stat.todo { border-color:var(--muted); color:var(--muted); }
+
+.sidebar-footer {
+  margin-top:auto; padding:16px 20px;
+  border-top:1px solid rgba(255,255,255,0.06);
+  font-size:9px; color:var(--muted); line-height:1.7;
+}
+
+/* ─── MAIN CONTENT ─── */
+.main { overflow:hidden; }
+
+/* ─── TOOLBAR ─── */
+.toolbar {
+  background:#141412; border-bottom:1px solid rgba(255,255,255,0.06);
+  padding:10px 24px; display:flex; align-items:center; gap:16px;
+  position:sticky; top:0; z-index:50;
+}
+.toolbar-title { font-size:10px; letter-spacing:0.1em; color:var(--muted); flex:1; }
+.toolbar-btn {
+  font-family:var(--mono); font-size:9px; letter-spacing:0.1em;
+  text-transform:uppercase; padding:6px 14px; border:none;
+  cursor:pointer; transition:all 0.15s;
+}
+.toolbar-btn.primary { background:var(--red); color:var(--white); }
+.toolbar-btn.ghost   { background:none; border:0.5px solid rgba(255,255,255,0.15); color:var(--muted); }
+.toolbar-btn:hover   { opacity:0.8; }
+.view-toggle { display:flex; gap:1px; }
+.view-btn {
+  font-family:var(--mono); font-size:9px; padding:6px 10px;
+  border:none; cursor:pointer; background:rgba(255,255,255,0.06);
+  color:var(--muted); transition:all 0.15s;
+}
+.view-btn.active { background:rgba(168,33,50,0.2); color:var(--red); }
+
+/* ─── PREVIEW WRAPPER ─── */
+.preview-wrap {
+  padding:24px;
+  background:repeating-linear-gradient(
+    45deg, #0D0D0B 0px, #0D0D0B 20px,
+    rgba(255,255,255,0.015) 20px, rgba(255,255,255,0.015) 21px
+  );
+}
+.preview-frame {
+  background:var(--dark); width:100%;
+  transition:max-width 0.3s;
+  margin:0 auto;
+  box-shadow:0 0 60px rgba(0,0,0,0.5);
+}
+.preview-frame.desktop { max-width:100%; }
+.preview-frame.tablet  { max-width:768px; }
+.preview-frame.mobile  { max-width:390px; }
+
+/* ─── LANDING PAGE STYLES ─── */
+.sg-wrap { background:var(--dark); color:var(--white); font-family:var(--mono); width:100%; }
+
+.sg-nav {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:24px 40px; border-bottom:0.5px solid rgba(245,246,247,0.1);
+}
+.sg-logo { font-family:var(--mono); font-size:13px; font-weight:500; letter-spacing:0.08em; }
+.sg-logo span { color:var(--red); }
+.sg-nav-links { display:flex; gap:28px; list-style:none; }
+.sg-nav-links a { font-size:10px; letter-spacing:0.12em; color:rgba(245,246,247,0.45); text-decoration:none; text-transform:uppercase; transition:color 0.2s; }
+.sg-nav-links a:hover { color:var(--white); }
+.sg-nav-cta { font-size:10px; letter-spacing:0.1em; color:var(--red); border:0.5px solid var(--red); padding:7px 18px; text-decoration:none; text-transform:uppercase; transition:all 0.2s; }
+.sg-nav-cta:hover { background:var(--red); color:var(--white); }
+
+.sg-hero { min-height:80vh; display:grid; grid-template-columns:1fr 1fr; position:relative; }
+.sg-hero-left { padding:72px 40px; display:flex; flex-direction:column; justify-content:flex-end; }
+.sg-hero-eyebrow { font-size:10px; letter-spacing:0.18em; color:var(--red); text-transform:uppercase; margin-bottom:28px; }
+.sg-hero-h1 { font-family:var(--serif); font-size:clamp(36px,4.5vw,64px); font-weight:300; font-style:italic; line-height:1.1; margin-bottom:16px; }
+.sg-hero-h1 strong { font-style:normal; font-weight:400; display:block; }
+.sg-hero-sub { font-size:11px; line-height:1.85; color:rgba(245,246,247,0.5); max-width:320px; margin-bottom:44px; letter-spacing:0.03em; }
+.sg-hero-actions { display:flex; align-items:center; gap:28px; }
+.sg-btn-primary { background:var(--red); color:var(--white); font-family:var(--mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; padding:13px 28px; border:none; cursor:pointer; text-decoration:none; display:inline-block; }
+.sg-btn-ghost { font-size:10px; letter-spacing:0.1em; color:rgba(245,246,247,0.4); text-decoration:none; display:flex; align-items:center; gap:8px; }
+.sg-btn-ghost::after { content:'→'; }
+.sg-hero-right { position:relative; overflow:hidden; background:var(--carbon); }
+.sg-hero-img-placeholder { width:100%; height:100%; min-height:480px; background:linear-gradient(145deg,#1a1a1a 0%,#2a2020 50%,#1a1010 100%); display:flex; align-items:flex-end; padding:32px; }
+.sg-hero-img-label { font-size:9px; letter-spacing:0.15em; color:rgba(245,246,247,0.18); text-transform:uppercase; }
+.sg-hero-num { position:absolute; top:40px; right:32px; font-family:var(--serif); font-size:120px; font-weight:300; color:rgba(168,33,50,0.07); line-height:1; user-select:none; }
+.sg-hero-stat-strip { position:absolute; bottom:0; left:0; right:0; display:grid; grid-template-columns:1fr 1fr; border-top:0.5px solid rgba(245,246,247,0.07); }
+.sg-stat { padding:20px 32px; border-right:0.5px solid rgba(245,246,247,0.07); }
+.sg-stat:last-child { border-right:none; }
+.sg-stat-num { font-family:var(--serif); font-size:26px; font-weight:300; display:block; margin-bottom:3px; }
+.sg-stat-label { font-size:9px; letter-spacing:0.12em; color:var(--muted); text-transform:uppercase; }
+
+.sg-manifesto { display:grid; grid-template-columns:180px 1fr; padding:80px 40px; gap:64px; align-items:start; border-top:0.5px solid rgba(245,246,247,0.07); }
+.sg-manifesto-label { font-size:9px; letter-spacing:0.18em; color:var(--muted); text-transform:uppercase; padding-top:6px; }
+.sg-manifesto-body { display:flex; flex-direction:column; gap:32px; }
+.sg-manifesto-quote { font-family:var(--serif); font-size:clamp(20px,2.5vw,32px); font-weight:300; line-height:1.45; }
+.sg-manifesto-quote em { color:var(--red); font-style:italic; }
+.sg-manifesto-text { font-size:11px; line-height:1.95; color:rgba(245,246,247,0.42); max-width:540px; letter-spacing:0.02em; }
+.sg-tag-row { display:flex; gap:10px; flex-wrap:wrap; }
+.sg-tag { font-size:9px; letter-spacing:0.1em; text-transform:uppercase; border:0.5px solid rgba(245,246,247,0.15); padding:5px 12px; color:rgba(245,246,247,0.38); }
+
+.sg-services { border-top:0.5px solid rgba(245,246,247,0.07); padding-bottom:80px; }
+.sg-section-header { display:flex; justify-content:space-between; align-items:baseline; padding:40px 40px 0; margin-bottom:0; }
+.sg-section-title { font-size:9px; letter-spacing:0.18em; color:var(--muted); text-transform:uppercase; }
+.sg-section-count { font-size:9px; letter-spacing:0.1em; color:rgba(245,246,247,0.2); }
+.sg-services-grid { display:grid; grid-template-columns:repeat(3,1fr); }
+.sg-service-item { padding:40px; border-right:0.5px solid rgba(245,246,247,0.07); border-top:0.5px solid rgba(245,246,247,0.07); cursor:pointer; transition:background 0.2s; }
+.sg-service-item:last-child { border-right:none; }
+.sg-service-item:hover { background:rgba(255,255,255,0.02); }
+.sg-service-num { font-family:var(--serif); font-size:32px; font-weight:300; color:rgba(168,33,50,0.25); display:block; margin-bottom:16px; }
+.sg-service-name { font-size:13px; font-weight:500; margin-bottom:10px; letter-spacing:0.02em; }
+.sg-service-desc { font-size:11px; line-height:1.75; color:rgba(245,246,247,0.42); }
+.sg-service-arrow { display:block; margin-top:20px; color:var(--muted); font-size:14px; transition:transform 0.2s; }
+.sg-service-item:hover .sg-service-arrow { transform:translateX(4px); color:var(--red); }
+
+.sg-portfolio { border-top:0.5px solid rgba(245,246,247,0.07); padding-bottom:80px; }
+.sg-portfolio-header { display:flex; justify-content:space-between; align-items:center; padding:40px 40px 32px; }
+.sg-portfolio-filters { display:flex; gap:4px; }
+.sg-filter { font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; padding:6px 14px; background:none; border:0.5px solid rgba(245,246,247,0.12); color:rgba(245,246,247,0.38); cursor:pointer; transition:all 0.2s; }
+.sg-filter.active { border-color:var(--red); color:var(--red); }
+.sg-portfolio-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:rgba(245,246,247,0.06); padding:0 1px; }
+.sg-port-item { position:relative; aspect-ratio:4/3; overflow:hidden; cursor:pointer; background:var(--mid); }
+.sg-port-bg { position:absolute; inset:0; transition:transform 0.5s; }
+.sg-port-item:hover .sg-port-bg { transform:scale(1.04); }
+.bg-p1 { background:linear-gradient(135deg,#2a2018,#3a3020); }
+.bg-p2 { background:linear-gradient(135deg,#1a2028,#202830); }
+.bg-p3 { background:linear-gradient(135deg,#201818,#302020); }
+.bg-p4 { background:linear-gradient(135deg,#182018,#202820); }
+.bg-p5 { background:linear-gradient(135deg,#201820,#302030); }
+.bg-p6 { background:linear-gradient(135deg,#182018,#283828); }
+.sg-port-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(17,17,17,0.85) 0%,transparent 55%); display:flex; align-items:flex-end; padding:20px; opacity:0; transition:opacity 0.3s; }
+.sg-port-item:hover .sg-port-overlay { opacity:1; }
+.sg-port-name { font-size:12px; font-weight:500; }
+.sg-port-type { font-size:9px; letter-spacing:0.1em; color:var(--muted); margin-top:2px; text-transform:uppercase; }
+
+.sg-process { display:grid; grid-template-columns:200px 1fr; padding:80px 40px; gap:64px; align-items:start; border-top:0.5px solid rgba(245,246,247,0.07); }
+.sg-process-label { font-size:9px; letter-spacing:0.18em; color:var(--muted); text-transform:uppercase; padding-top:6px; }
+.sg-process-steps { display:flex; flex-direction:column; gap:0; }
+.sg-step { display:flex; gap:28px; padding:28px 0; border-bottom:0.5px solid rgba(245,246,247,0.07); }
+.sg-step:last-child { border-bottom:none; }
+.sg-step-n { font-family:var(--serif); font-size:13px; font-weight:300; color:var(--red); opacity:0.7; flex-shrink:0; width:28px; margin-top:2px; }
+.sg-step-title { font-size:13px; font-weight:500; margin-bottom:8px; }
+.sg-step-desc { font-size:11px; line-height:1.8; color:rgba(245,246,247,0.42); }
+
+.sg-cta { display:grid; grid-template-columns:1fr 1fr; padding:80px 40px; gap:64px; align-items:start; border-top:0.5px solid rgba(245,246,247,0.07); background:var(--carbon); }
+.sg-cta-headline { font-family:var(--serif); font-size:clamp(26px,3.2vw,44px); font-weight:300; line-height:1.2; }
+.sg-cta-headline em { color:var(--red); font-style:italic; }
+.sg-cta-text { font-size:11px; line-height:1.85; color:rgba(245,246,247,0.42); margin-bottom:24px; }
+.sg-cta-form { display:flex; flex-direction:column; gap:2px; }
+.sg-cta-form input { background:rgba(245,246,247,0.04); border:none; border-bottom:0.5px solid rgba(245,246,247,0.12); padding:12px 0; font-family:var(--mono); font-size:11px; color:var(--white); outline:none; transition:border-color 0.2s; }
+.sg-cta-form input:focus { border-color:var(--red); }
+.sg-cta-form input::placeholder { color:rgba(245,246,247,0.25); }
+.sg-cta-submit { margin-top:20px; background:var(--red); border:none; padding:14px 28px; font-family:var(--mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--white); cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition:opacity 0.2s; }
+.sg-cta-submit:hover { opacity:0.85; }
+
+.sg-footer { display:flex; justify-content:space-between; align-items:center; padding:24px 40px; border-top:0.5px solid rgba(245,246,247,0.07); }
+.sg-footer-logo { font-size:12px; font-weight:500; letter-spacing:0.08em; }
+.sg-footer-logo span { color:var(--red); }
+.sg-footer-copy { font-size:9px; letter-spacing:0.1em; color:rgba(245,246,247,0.15); text-transform:uppercase; }
+.sg-footer-ig { font-size:9px; letter-spacing:0.1em; color:rgba(245,246,247,0.28); text-decoration:none; text-transform:uppercase; transition:color 0.2s; }
+.sg-footer-ig:hover { color:var(--white); }
+
+/* ─── SECTION HIGHLIGHT ─── */
+.section-editable { position:relative; }
+.section-editable::before {
+  content:''; position:absolute; inset:0; border:1px dashed transparent;
+  pointer-events:none; transition:border-color 0.2s; z-index:5;
+}
+.section-editable:hover::before { border-color:rgba(168,33,50,0.3); }
+.section-editable .edit-chip {
+  position:absolute; top:8px; right:8px; z-index:10;
+  font-size:8px; letter-spacing:0.1em; text-transform:uppercase;
+  background:var(--red); color:var(--white); padding:3px 8px;
+  opacity:0; transition:opacity 0.2s; pointer-events:none;
+}
+.section-editable:hover .edit-chip { opacity:1; }
+
+/* ─── NOTES PANEL ─── */
+.notes-panel {
+  background:#141412; border-top:1px solid rgba(255,255,255,0.06);
+  padding:16px 24px;
+}
+.notes-header { font-size:9px; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+.notes-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.note-card { background:rgba(255,255,255,0.03); border:0.5px solid rgba(255,255,255,0.07); padding:12px; }
+.note-card-title { font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:var(--red); margin-bottom:6px; }
+.note-card-body { font-size:10px; color:rgba(245,246,247,0.4); line-height:1.65; }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-logo">SG<span>_</span>Arquitectura Arte</div>
+      <div class="sidebar-sub">Landing Page · Claude Workspace</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Secciones</div>
+      <button class="nav-item active done" onclick="scrollTo('hero')">
+        <span class="nav-dot"></span> Hero
+        <span class="nav-status">✓ done</span>
+      </button>
+      <button class="nav-item done" onclick="scrollTo('manifesto')">
+        <span class="nav-dot"></span> Manifiesto
+        <span class="nav-status">✓ done</span>
+      </button>
+      <button class="nav-item done" onclick="scrollTo('services')">
+        <span class="nav-dot"></span> Servicios
+        <span class="nav-status">✓ done</span>
+      </button>
+      <button class="nav-item pending" onclick="scrollTo('portfolio')">
+        <span class="nav-dot"></span> Portafolio
+        <span class="nav-status">⚡ fotos</span>
+      </button>
+      <button class="nav-item done" onclick="scrollTo('process')">
+        <span class="nav-dot"></span> Proceso
+        <span class="nav-status">✓ done</span>
+      </button>
+      <button class="nav-item pending" onclick="scrollTo('cta')">
+        <span class="nav-dot"></span> CTA / Form
+        <span class="nav-status">⚡ conectar</span>
+      </button>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Estado del proyecto</div>
+      <div class="status-row">
+        <span class="badge-stat live">Diseño</span>
+        <span class="badge-stat wip">Fotos</span>
+        <span class="badge-stat wip">Form</span>
+        <span class="badge-stat todo">SEO</span>
+        <span class="badge-stat todo">Deploy</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Colores de marca</div>
+      <div class="color-row">
+        <div class="color-label">Acento / Rojo</div>
+        <div class="color-swatch" style="background:#A82132;">
+          <input type="color" value="#A82132" oninput="updateColor('--red',this.value)">
+        </div>
+      </div>
+      <div class="color-row">
+        <div class="color-label">Fondo oscuro</div>
+        <div class="color-swatch" style="background:#111111;">
+          <input type="color" value="#111111" oninput="updateColor('--dark',this.value)">
+        </div>
+      </div>
+      <div class="color-row">
+        <div class="color-label">Acero / Links</div>
+        <div class="color-swatch" style="background:#4A7FA0;">
+          <input type="color" value="#4A7FA0" oninput="updateColor('--steel',this.value)">
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Pendientes críticos</div>
+      <div style="font-size:10px;color:rgba(245,246,247,0.35);line-height:1.8;padding:0 2px;">
+        ① Fotos del despacho y proyectos<br>
+        ② Conectar form al Apps Script<br>
+        ③ Dominio sgarquitecturaarte.com<br>
+        ④ Meta description + OG tags<br>
+        ⑤ WhatsApp flotante mobile
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      Versiona Studio · 2026<br>
+      versiona.studio@gmail.com
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <div class="main">
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <span class="toolbar-title">Vista previa · sg_landing_v1.html</span>
+      <div class="view-toggle">
+        <button class="view-btn active" onclick="setView('desktop',this)">Desktop</button>
+        <button class="view-btn" onclick="setView('tablet',this)">Tablet</button>
+        <button class="view-btn" onclick="setView('mobile',this)">Mobile</button>
+      </div>
+      <button class="toolbar-btn ghost" onclick="copyCode()">↓ Exportar HTML</button>
+      <button class="toolbar-btn primary" onclick="alert('Conectar con Netlify deploy desde aquí')">↑ Deploy</button>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-wrap">
+      <div class="preview-frame desktop" id="previewFrame">
+
+        <!-- ── LANDING ── -->
+        <div class="sg-wrap">
+
+          <!-- NAV -->
+          <nav class="sg-nav section-editable" id="nav">
+            <div class="edit-chip">Editar nav</div>
+            <div class="sg-logo">SG<span>_</span>Arquitectura Arte</div>
+            <ul class="sg-nav-links">
+              <li><a href="#">Proyectos</a></li>
+              <li><a href="#">Proceso</a></li>
+              <li><a href="#">Estudio</a></li>
+              <li><a href="#">Contacto</a></li>
+            </ul>
+            <a href="#" class="sg-nav-cta">Iniciar proyecto</a>
+          </nav>
+
+          <!-- HERO -->
+          <section class="sg-hero section-editable" id="hero">
+            <div class="edit-chip">Editar hero</div>
+            <div class="sg-hero-left">
+              <div class="sg-hero-eyebrow">Despacho de arquitectura — Guanajuato, MX</div>
+              <h1 class="sg-hero-h1">
+                Espacios que<br>
+                <strong>llevan tu vida</strong>
+                adentro.
+              </h1>
+              <p class="sg-hero-sub">
+                Diseñamos y construimos casas a medida. Cada decisión tiene una razón. Cada espacio, una historia que empieza contigo.
+              </p>
+              <div class="sg-hero-actions">
+                <a href="#" class="sg-btn-primary">Cuéntanos tu proyecto</a>
+                <a href="#" class="sg-btn-ghost">Ver portafolio</a>
+              </div>
+            </div>
+            <div class="sg-hero-right">
+              <div class="sg-hero-img-placeholder">
+                <span class="sg-hero-img-label">← Foto flagship del despacho</span>
+              </div>
+              <div class="sg-hero-num">10</div>
+            </div>
+            <div class="sg-hero-stat-strip">
+              <div class="sg-stat">
+                <span class="sg-stat-num">10+</span>
+                <span class="sg-stat-label">Años de experiencia</span>
+              </div>
+              <div class="sg-stat">
+                <span class="sg-stat-num">Casa → Obra</span>
+                <span class="sg-stat-label">Acompañamiento completo</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- MANIFESTO -->
+          <section class="sg-manifesto section-editable" id="manifesto">
+            <div class="edit-chip">Editar texto</div>
+            <div class="sg-manifesto-label">El estudio</div>
+            <div class="sg-manifesto-body">
+              <p class="sg-manifesto-quote">
+                Construimos espacios con <em>intención</em>, no solo con metros cuadrados.
+              </p>
+              <p class="sg-manifesto-text">
+                SG Arquitectura Arte es un despacho de diseño y construcción con más de 10 años resolviendo proyectos residenciales en México. Trabajamos desde el concepto hasta la obra terminada — con presupuestos claros, procesos transparentes y el mismo compromiso en cada proyecto.
+              </p>
+              <div class="sg-tag-row">
+                <span class="sg-tag">Arquitectura residencial</span>
+                <span class="sg-tag">Diseño de interiores</span>
+                <span class="sg-tag">Construcción</span>
+                <span class="sg-tag">Paisajismo</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- SERVICES -->
+          <section class="sg-services section-editable" id="services">
+            <div class="edit-chip">Editar servicios</div>
+            <div class="sg-section-header">
+              <span class="sg-section-title">Servicios</span>
+              <span class="sg-section-count">03 ámbitos</span>
+            </div>
+            <div class="sg-services-grid">
+              <div class="sg-service-item">
+                <span class="sg-service-num">01</span>
+                <div class="sg-service-name">Proyecto Ejecutivo + Construcción</div>
+                <p class="sg-service-desc">De los planos a la llave en mano. Coordinamos diseño, ingeniería y obra con un solo equipo.</p>
+                <span class="sg-service-arrow">→</span>
+              </div>
+              <div class="sg-service-item">
+                <span class="sg-service-num">02</span>
+                <div class="sg-service-name">Diseño de Interiores</div>
+                <p class="sg-service-desc">Espacios que reflejan cómo vives, no tendencias del año. Funcionalidad y estética, sin elegir.</p>
+                <span class="sg-service-arrow">→</span>
+              </div>
+              <div class="sg-service-item">
+                <span class="sg-service-num">03</span>
+                <div class="sg-service-name">Remodelación</div>
+                <p class="sg-service-desc">Carpintería, herrería, impermeabilización, pérgolas. Lo que tu espacio necesita para evolucionar.</p>
+                <span class="sg-service-arrow">→</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- PORTFOLIO -->
+          <section class="sg-portfolio section-editable" id="portfolio">
+            <div class="edit-chip">⚡ Agregar fotos</div>
+            <div class="sg-portfolio-header">
+              <span class="sg-section-title">Proyectos seleccionados</span>
+              <div class="sg-portfolio-filters">
+                <button class="sg-filter active">Todos</button>
+                <button class="sg-filter">Residencial</button>
+                <button class="sg-filter">Interiores</button>
+                <button class="sg-filter">Remodelación</button>
+              </div>
+            </div>
+            <div class="sg-portfolio-grid">
+              <div class="sg-port-item"><div class="sg-port-bg bg-p1"></div><div class="sg-port-overlay"><div class="sg-port-info"><div class="sg-port-name">Casa Roble</div><div class="sg-port-type">Residencial · 320 m²</div></div></div></div>
+              <div class="sg-port-item"><div class="sg-port-bg bg-p2"></div><div class="sg-port-overlay"><div class="sg-port-info"><div class="sg-port-name">Estudio Mineral</div><div class="sg-port-type">Interiores · León</div></div></div></div>
+              <div class="sg-port-item"><div class="sg-port-bg bg-p3"></div><div class="sg-port-overlay"><div class="sg-port-info"><div class="sg-port-name">Terraza Norte</div><div class="sg-port-type">Remodelación · Gto</div></div></div></div>
+              <div class="sg-port-item"><div class="sg-port-bg bg-p4"></div><div class="sg-port-overlay"><div class="sg-port-info"><div class="sg-port-name">Residencia Cantera</div><div class="sg-port-type">Residencial · 480 m²</div></div></div></div>
+              <div class="sg-port-item"><div class="sg-port-bg bg-p5"></div><div class="sg-port-overlay"><div class="sg-port-info"><div class="sg-port-name">Cocina Volcánica</div><div class="sg-port-type">Interiores · San Miguel</div></div></div></div>
+              <div class="sg-port-item"><div class="sg-port-bg bg-p6"></div><div class="sg-port-overlay"><div class="sg-port-info"><div class="sg-port-name">Casa Jardín</div><div class="sg-port-type">Paisajismo + Construcción</div></div></div></div>
+            </div>
+          </section>
+
+          <!-- PROCESS -->
+          <section class="sg-process section-editable" id="process">
+            <div class="edit-chip">Editar proceso</div>
+            <div class="sg-process-label">Cómo trabajamos</div>
+            <div class="sg-process-steps">
+              <div class="sg-step"><span class="sg-step-n">01.</span><div><div class="sg-step-title">Cuéntanos tu proyecto</div><p class="sg-step-desc">Antes de la primera llamada, llenás un formulario breve que nos ayuda a entender qué buscás, cómo vivís y qué tan avanzado está tu proyecto. No perdemos tu tiempo ni el nuestro.</p></div></div>
+              <div class="sg-step"><span class="sg-step-n">02.</span><div><div class="sg-step-title">Primera reunión con propósito</div><p class="sg-step-desc">Llegamos preparados. Sabemos lo básico, así que el tiempo lo usamos en lo que importa: diseñar juntos la visión, resolver dudas reales y definir si hay match.</p></div></div>
+              <div class="sg-step"><span class="sg-step-n">03.</span><div><div class="sg-step-title">Propuesta clara, sin letras chicas</div><p class="sg-step-desc">Presupuesto con rangos reales, alcance definido y tiempos acordados. Sin sorpresas en el camino.</p></div></div>
+              <div class="sg-step"><span class="sg-step-n">04.</span><div><div class="sg-step-title">Diseño y construcción acompañada</div><p class="sg-step-desc">Desde los planos hasta la última mano de pintura. Te informamos en cada etapa y tomamos decisiones juntos cuando algo cambia.</p></div></div>
+            </div>
+          </section>
+
+          <!-- CTA -->
+          <section class="sg-cta section-editable" id="cta">
+            <div class="edit-chip">⚡ Conectar form</div>
+            <div>
+              <h2 class="sg-cta-headline">Cada proyecto empieza<br>con una <em>buena conversación.</em></h2>
+            </div>
+            <div class="sg-cta-right">
+              <p class="sg-cta-text">Cuéntanos qué tienes en mente. En menos de 48 horas te respondemos y agendamos una primera llamada sin compromiso.</p>
+              <div class="sg-cta-form">
+                <input type="text" placeholder="Nombre">
+                <input type="text" placeholder="Email o WhatsApp">
+                <input type="text" placeholder="¿En qué etapa está tu proyecto?">
+                <button class="sg-cta-submit"><span>Enviar mensaje</span><span>→</span></button>
+              </div>
+            </div>
+          </section>
+
+          <!-- FOOTER -->
+          <footer class="sg-footer section-editable" id="footer">
+            <div class="edit-chip">Editar footer</div>
+            <div class="sg-footer-logo">SG<span>_</span>Arquitectura Arte</div>
+            <span class="sg-footer-copy">© 2026 — Guanajuato, México</span>
+            <a href="https://instagram.com/sg_arquitecturarte" class="sg-footer-ig">@sg_arquitecturarte</a>
+          </footer>
+
+        </div><!-- /.sg-wrap -->
+      </div><!-- /#previewFrame -->
+    </div><!-- /.preview-wrap -->
+
+    <!-- Notes -->
+    <div class="notes-panel">
+      <div class="notes-header">Notas del proyecto</div>
+      <div class="notes-grid">
+        <div class="note-card">
+          <div class="note-card-title">⚡ Fotos urgentes</div>
+          <div class="note-card-body">El portafolio necesita imágenes reales. Sugerencia: sesión fotográfica de 1 día con 3–4 proyectos terminados. Mínimo 2 por proyecto.</div>
+        </div>
+        <div class="note-card">
+          <div class="note-card-title">🔗 Form → Apps Script</div>
+          <div class="note-card-body">El CTA de la landing debe apuntar al mismo Apps Script del sistema de captación. URL: configurar en sección CTA.</div>
+        </div>
+        <div class="note-card">
+          <div class="note-card-title">📱 Mobile pendiente</div>
+          <div class="note-card-body">Hero, servicios y portafolio necesitan breakpoints para mobile. Agregar hamburger menu y WhatsApp flotante.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.main -->
+</div><!-- /.shell -->
+
+<script>
+// View toggle
+function setView(view, btn) {
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const frame = document.getElementById('previewFrame');
+  frame.className = 'preview-frame ' + view;
+}
+
+// Color updater
+function updateColor(prop, val) {
+  document.querySelector('.sg-wrap').style.setProperty(prop, val);
+}
+
+// Scroll to section
+function scrollTo(id) {
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+// Filter buttons
+document.querySelectorAll('.sg-filter').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.sg-filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+// Export
+function copyCode() {
+  const html = document.querySelector('.sg-wrap').outerHTML;
+  navigator.clipboard.writeText(html).then(() => alert('HTML copiado al portapapeles ✓'));
+}
+</script>
+</body>
+</html>
