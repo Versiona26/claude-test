@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Versiona · SG Arquitectura — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Serif:ital,wght@0,300;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   RESET + TOKENS
+═══════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:      #0A0A09;
+  --surface: #111110;
+  --card:    #161614;
+  --border:  rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.1);
+  --red:     #A82132;
+  --red-dim: rgba(168,33,50,0.1);
+  --gold:    #C4962A;
+  --gold-dim:rgba(196,150,42,0.1);
+  --green:   #2C6E49;
+  --green-dim:rgba(44,110,73,0.12);
+  --amber:   #92610A;
+  --amber-dim:rgba(146,97,10,0.12);
+  --steel:   #4A7FA0;
+  --white:   #F5F6F7;
+  --silver:  #C8CBCE;
+  --muted:   #6B7075;
+  --mono:    'IBM Plex Mono', monospace;
+  --serif:   'IBM Plex Serif', serif;
+
+  --sidebar-w: 220px;
+}
+
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--mono);
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════ */
+.app { display: grid; grid-template-columns: var(--sidebar-w) 1fr; height: 100vh; }
+
+/* ═══════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════ */
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+}
+
+.sidebar-brand {
+  padding: 20px 18px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.brand-tag {
+  font-size: 8px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.brand-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--white);
+  letter-spacing: 0.06em;
+}
+.brand-name span { color: var(--red); }
+.brand-client {
+  font-size: 9px;
+  color: var(--muted);
+  margin-top: 3px;
+  letter-spacing: 0.04em;
+}
+
+.sidebar-section { padding: 14px 10px 4px; }
+.sidebar-section-title {
+  font-size: 8px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0 8px 8px;
+}
+
+.nav-btn {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 8px 10px;
+  background: none; border: none;
+  font-family: var(--mono); font-size: 11px;
+  color: rgba(245,246,247,0.45);
+  cursor: pointer; text-align: left;
+  border-radius: 3px; transition: all 0.15s;
+  letter-spacing: 0.03em;
+}
+.nav-btn:hover { background: rgba(255,255,255,0.04); color: var(--white); }
+.nav-btn.active { background: var(--red-dim); color: var(--white); }
+.nav-btn .nb-icon { font-size: 12px; opacity: 0.6; width: 16px; text-align: center; flex-shrink: 0; }
+.nav-btn.active .nb-icon { opacity: 1; color: var(--red); }
+.nav-btn .nb-badge {
+  margin-left: auto;
+  font-size: 8px;
+  background: var(--red);
+  color: var(--white);
+  padding: 2px 6px;
+  border-radius: 2px;
+  min-width: 18px;
+  text-align: center;
+}
+.nb-badge.green { background: var(--green); }
+.nb-badge.amber { background: var(--amber); }
+.nb-badge.muted { background: rgba(255,255,255,0.08); color: var(--muted); }
+
+.sidebar-divider { height: 1px; background: var(--border); margin: 8px 10px; }
+
+/* Project health */
+.health-card {
+  margin: 10px;
+  padding: 12px;
+  background: var(--card);
+  border: 0.5px solid var(--border2);
+}
+.health-title { font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.health-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 10px; }
+.health-label { color: rgba(245,246,247,0.45); }
+.health-dot { width: 6px; height: 6px; border-radius: 50%; }
+.health-dot.live  { background: #5cb88a; }
+.health-dot.wip   { background: #e0a83a; box-shadow: 0 0 6px rgba(224,168,58,0.4); }
+.health-dot.todo  { background: var(--muted); }
+.health-dot.err   { background: var(--red); box-shadow: 0 0 6px rgba(168,33,50,0.4); }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 14px 18px;
+  border-top: 1px solid var(--border);
+  font-size: 9px; color: var(--muted); line-height: 1.7;
+}
+.sidebar-footer a { color: var(--muted); text-decoration: none; transition: color 0.15s; }
+.sidebar-footer a:hover { color: var(--white); }
+
+/* ═══════════════════════════════════════
+   MAIN
+═══════════════════════════════════════ */
+.main { display: flex; flex-direction: column; overflow: hidden; }
+
+/* TOPBAR */
+.topbar {
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 24px;
+  height: 48px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.topbar-title { font-size: 11px; font-weight: 500; color: var(--white); letter-spacing: 0.04em; flex: 1; }
+.topbar-sub { font-size: 9px; color: var(--muted); }
+.topbar-btn {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 6px 14px;
+  border: none; cursor: pointer; transition: all 0.15s;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+}
+.topbar-btn.primary { background: var(--red); color: var(--white); }
+.topbar-btn.ghost { background: none; border: 0.5px solid var(--border2); color: var(--muted); }
+.topbar-btn:hover { opacity: 0.8; }
+.pulse-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #5cb88a;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(92,184,138,0.4)} 50%{opacity:.7;box-shadow:0 0 0 4px rgba(92,184,138,0)} }
+
+/* CONTENT */
+.content { flex: 1; overflow-y: auto; padding: 24px; }
+
+/* VIEWS */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ═══════════════════════════════════════
+   KPI ROW
+═══════════════════════════════════════ */
+.kpi-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
+.kpi {
+  background: var(--card);
+  border: 0.5px solid var(--border2);
+  padding: 18px 20px;
+  position: relative; overflow: hidden;
+}
+.kpi::before {
+  content: '';
+  position: absolute; top: 0; left: 0;
+  width: 2px; height: 100%;
+}
+.kpi.red::before  { background: var(--red); }
+.kpi.green::before{ background: #5cb88a; }
+.kpi.amber::before{ background: #e0a83a; }
+.kpi.blue::before { background: var(--steel); }
+.kpi-label { font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.kpi-value { font-family: var(--serif); font-size: 36px; font-weight: 300; line-height: 1; color: var(--white); }
+.kpi-sub { font-size: 9px; color: var(--muted); margin-top: 6px; }
+
+/* ═══════════════════════════════════════
+   SECTION HEADER
+═══════════════════════════════════════ */
+.sh { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
+.sh-title { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+.sh-action { font-size: 9px; color: var(--steel); cursor: pointer; letter-spacing: 0.06em; background: none; border: none; font-family: var(--mono); transition: color 0.15s; }
+.sh-action:hover { color: var(--white); }
+
+/* ═══════════════════════════════════════
+   FILTERS
+═══════════════════════════════════════ */
+.filters { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+.filter-btn {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 5px 12px;
+  background: none; border: 0.5px solid rgba(255,255,255,0.1);
+  color: var(--muted); cursor: pointer; transition: all 0.15s;
+}
+.filter-btn:hover { border-color: var(--steel); color: var(--white); }
+.filter-btn.active { border-color: var(--red); color: var(--white); background: var(--red-dim); }
+.search-box {
+  margin-left: auto;
+  background: rgba(255,255,255,0.04);
+  border: 0.5px solid rgba(255,255,255,0.1);
+  color: var(--white); font-family: var(--mono); font-size: 10px;
+  padding: 5px 12px; outline: none; width: 180px;
+  transition: border-color 0.15s;
+}
+.search-box:focus { border-color: var(--steel); }
+.search-box::placeholder { color: var(--muted); }
+
+/* ═══════════════════════════════════════
+   LEAD CARDS
+═══════════════════════════════════════ */
+.lead-list { display: flex; flex-direction: column; gap: 2px; }
+.lead-row {
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  cursor: pointer; overflow: hidden;
+  transition: border-color 0.15s;
+}
+.lead-row:hover { border-color: rgba(255,255,255,0.12); }
+.lead-row.expanded { border-color: var(--steel); }
+
+.lead-header {
+  display: grid;
+  grid-template-columns: 38px 1fr 110px 80px 64px;
+  gap: 12px; padding: 11px 16px;
+  align-items: center;
+}
+.tier-badge {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 500; flex-shrink: 0;
+}
+.tier-badge.A { background: var(--green-dim); color: #5cb88a; border: 0.5px solid rgba(92,184,138,0.25); }
+.tier-badge.B { background: var(--amber-dim); color: #e0a83a; border: 0.5px solid rgba(224,168,58,0.25); }
+.tier-badge.C { background: var(--red-dim);   color: #e05c6a; border: 0.5px solid rgba(224,92,106,0.25); }
+
+.lead-name { font-size: 12px; font-weight: 400; color: var(--white); }
+.lead-meta { font-size: 9px; color: var(--muted); margin-top: 2px; }
+
+.score-col { }
+.score-num { font-size: 10px; color: var(--silver); margin-bottom: 3px; }
+.score-bar { height: 2px; background: rgba(255,255,255,0.07); }
+.score-fill { height: 100%; transition: width 0.4s; }
+.score-fill.A { background: #5cb88a; }
+.score-fill.B { background: #e0a83a; }
+.score-fill.C { background: #e05c6a; }
+
+.tier-tag {
+  font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 3px 8px; border: 0.5px solid;
+  text-align: center;
+}
+.tier-tag.A { color: #5cb88a; border-color: rgba(92,184,138,0.3); }
+.tier-tag.B { color: #e0a83a; border-color: rgba(224,168,58,0.3); }
+.tier-tag.C { color: #e05c6a; border-color: rgba(224,92,106,0.3); }
+
+.lead-date { font-size: 9px; color: var(--muted); text-align: right; }
+.expand-icon { font-size: 9px; color: var(--muted); transition: transform 0.2s; text-align: right; }
+.lead-row.expanded .expand-icon { transform: rotate(180deg); }
+
+/* DETAIL */
+.lead-detail {
+  display: none; padding: 16px 16px 18px;
+  border-top: 0.5px solid var(--border);
+}
+.lead-row.expanded .lead-detail { display: block; }
+.detail-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 14px; }
+.detail-section-title { font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--steel); margin-bottom: 8px; padding-bottom: 4px; border-bottom: 0.5px solid var(--border); }
+.detail-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 10px; border-bottom: 0.5px solid rgba(255,255,255,0.04); gap: 8px; }
+.detail-row:last-child { border-bottom: none; }
+.dk { color: var(--muted); font-weight: 300; flex-shrink: 0; }
+.dv { color: var(--white); text-align: right; font-weight: 300; font-size: 10px; }
+.action-row { display: flex; gap: 8px; padding-top: 12px; border-top: 0.5px solid var(--border); }
+.action-btn {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 7px 16px; border: none; cursor: pointer; transition: opacity 0.15s; text-decoration: none;
+}
+.action-btn.wa  { background: #25D366; color: #fff; }
+.action-btn.mail{ background: var(--steel); color: #fff; }
+.action-btn.del { background: none; border: 0.5px solid rgba(224,92,106,0.3); color: #e05c6a; }
+.action-btn:hover { opacity: 0.8; }
+
+/* ═══════════════════════════════════════
+   PROYECTO VIEW
+═══════════════════════════════════════ */
+.project-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.project-col { display: flex; flex-direction: column; gap: 12px; }
+
+.task-card { background: var(--card); border: 0.5px solid var(--border2); padding: 0; overflow: hidden; }
+.task-card-header { padding: 12px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 0.5px solid var(--border); }
+.task-card-title { font-size: 11px; font-weight: 500; color: var(--white); flex: 1; }
+.task-status { font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 8px; border: 0.5px solid; }
+.task-status.live  { color: #5cb88a; border-color: rgba(92,184,138,0.3); background: var(--green-dim); }
+.task-status.wip   { color: #e0a83a; border-color: rgba(224,168,58,0.3); background: var(--amber-dim); }
+.task-status.todo  { color: var(--muted); border-color: rgba(255,255,255,0.12); }
+.task-status.block { color: #e05c6a; border-color: rgba(224,92,106,0.3); background: var(--red-dim); }
+
+.task-items { padding: 4px 0; }
+.task-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 16px;
+  border-bottom: 0.5px solid var(--border);
+  font-size: 10px; color: rgba(245,246,247,0.55);
+  cursor: pointer; transition: background 0.15s;
+}
+.task-item:last-child { border-bottom: none; }
+.task-item:hover { background: rgba(255,255,255,0.02); }
+.task-item.done { color: var(--muted); text-decoration: line-through; }
+.task-check {
+  width: 14px; height: 14px;
+  border: 0.5px solid rgba(255,255,255,0.15); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 8px;
+}
+.task-item.done .task-check { background: var(--green-dim); border-color: rgba(92,184,138,0.3); color: #5cb88a; }
+
+/* Progress bar card */
+.progress-card { background: var(--card); border: 0.5px solid var(--border2); padding: 16px; }
+.progress-label { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 8px; }
+.progress-track { height: 3px; background: rgba(255,255,255,0.07); margin-bottom: 16px; }
+.progress-fill { height: 100%; background: var(--red); transition: width 0.5s; }
+
+/* ═══════════════════════════════════════
+   INTEGRATIONS VIEW
+═══════════════════════════════════════ */
+.integ-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+.integ-card { background: var(--card); border: 0.5px solid var(--border2); padding: 20px; }
+.integ-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.integ-icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 0.5px solid var(--border2); }
+.integ-name { font-size: 12px; font-weight: 500; color: var(--white); }
+.integ-status { font-size: 9px; color: var(--muted); margin-top: 2px; }
+.integ-body { font-size: 10px; color: var(--muted); line-height: 1.7; margin-bottom: 14px; }
+.integ-btn {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 8px 16px;
+  cursor: pointer; transition: all 0.15s; text-decoration: none;
+  display: inline-block;
+}
+.integ-btn.connected { border: 0.5px solid rgba(92,184,138,0.3); color: #5cb88a; background: var(--green-dim); }
+.integ-btn.action    { background: var(--steel); color: var(--white); border: none; }
+.integ-btn.notion    { background: #2F3437; color: var(--white); border: none; }
+.integ-btn:hover { opacity: 0.8; }
+
+/* Notion embed */
+.notion-embed { background: var(--card); border: 0.5px solid var(--border2); }
+.notion-toolbar { padding: 10px 16px; border-bottom: 0.5px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.notion-url-input {
+  flex: 1; background: rgba(255,255,255,0.04); border: 0.5px solid var(--border);
+  color: var(--white); font-family: var(--mono); font-size: 10px; padding: 6px 10px; outline: none;
+}
+.notion-url-input:focus { border-color: var(--steel); }
+.notion-iframe-wrap { height: 400px; }
+.notion-iframe-wrap iframe { width: 100%; height: 100%; border: none; }
+.notion-placeholder {
+  height: 400px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  font-size: 11px; color: var(--muted); gap: 8px;
+}
+.notion-placeholder .np-icon { font-size: 24px; opacity: 0.3; }
+
+/* ═══════════════════════════════════════
+   EMPTY / LOADING
+═══════════════════════════════════════ */
+.state-msg {
+  text-align: center; padding: 60px 20px;
+  font-size: 11px; color: var(--muted); line-height: 1.8;
+}
+.state-msg .sm-icon { font-size: 24px; color: var(--muted); margin-bottom: 12px; opacity: 0.3; }
+
+/* ═══════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════ */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════ */
+@media (max-width: 900px) {
+  :root { --sidebar-w: 56px; }
+  .sidebar-brand, .sidebar-section-title, .nav-btn span:not(.nb-icon), .nav-btn .nb-badge,
+  .health-card, .sidebar-footer { display: none; }
+  .nav-btn { justify-content: center; padding: 10px; }
+  .kpi-row { grid-template-columns: 1fr 1fr; }
+  .detail-grid { grid-template-columns: 1fr; }
+  .project-grid, .integ-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- ══════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-tag">Internal · Versiona Studio</div>
+    <div class="brand-name">V<span>_</span>Hub</div>
+    <div class="brand-client">Cliente: SG Arquitectura Arte</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Vistas</div>
+    <button class="nav-btn active" onclick="switchView('leads',this)">
+      <span class="nb-icon">◈</span> Leads
+      <span class="nb-badge" id="sbLeadCount">—</span>
+    </button>
+    <button class="nav-btn" onclick="switchView('proyecto',this)">
+      <span class="nb-icon">◉</span> Proyecto
+      <span class="nb-badge muted">Live</span>
+    </button>
+    <button class="nav-btn" onclick="switchView('integraciones',this)">
+      <span class="nb-icon">⬡</span> Integraciones
+    </button>
+    <button class="nav-btn" onclick="switchView('recursos',this)">
+      <span class="nb-icon">↗</span> Recursos
+    </button>
+  </div>
+
+  <div class="sidebar-divider"></div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Estado · SG Landing</div>
+    <div class="health-card">
+      <div class="health-title">Sistema de captación</div>
+      <div class="health-item"><span class="health-label">Landing page</span><span class="health-dot live"></span></div>
+      <div class="health-item"><span class="health-label">Form rápido</span><span class="health-dot live" id="hFormRapido"></span></div>
+      <div class="health-item"><span class="health-label">Intake 5 pasos</span><span class="health-dot live"></span></div>
+      <div class="health-item"><span class="health-label">Apps Script</span><span class="health-dot wip" id="hAppsScript"></span></div>
+      <div class="health-item"><span class="health-label">Google Sheets</span><span class="health-dot wip" id="hSheets"></span></div>
+      <div class="health-item"><span class="health-label">Dashboard</span><span class="health-dot live"></span></div>
+      <div class="health-item"><span class="health-label">Fotos portafolio</span><span class="health-dot todo"></span></div>
+      <div class="health-item"><span class="health-label">Dominio propio</span><span class="health-dot todo"></span></div>
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    Versiona Studio · 2026<br>
+    <a href="mailto:versiona.studio@gmail.com">versiona.studio@gmail.com</a><br>
+    <a href="https://versiona.mx" target="_blank">versiona.mx</a>
+  </div>
+</aside>
+
+<!-- ══════════════════════════════════════
+     MAIN
+══════════════════════════════════════ -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div>
+      <div class="topbar-title" id="topbarTitle">Leads · SG Arquitectura</div>
+    </div>
+    <div class="pulse-dot" title="Conectado a Apps Script"></div>
+    <span class="topbar-sub" id="lastUpdate">Cargando...</span>
+    <button class="topbar-btn ghost" onclick="loadLeads()">↺ Actualizar</button>
+    <a href="https://landing-sg.netlify.app" target="_blank" class="topbar-btn ghost">↗ Landing</a>
+    <a href="https://form-sg.netlify.app" target="_blank" class="topbar-btn ghost">↗ Form</a>
+    <a href="https://docs.google.com/spreadsheets/d/1XwpOWF6r9qpwzGzrm5Kwo8b74l2VQZght81g0BxQN-Q" target="_blank" class="topbar-btn primary">⬡ Sheet</a>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ══ VIEW: LEADS ══ -->
+    <div class="view active" id="view-leads">
+
+      <!-- KPIs -->
+      <div class="kpi-row">
+        <div class="kpi blue">
+          <div class="kpi-label">Total leads</div>
+          <div class="kpi-value" id="kpiTotal">—</div>
+          <div class="kpi-sub">todos los tiempos</div>
+        </div>
+        <div class="kpi green">
+          <div class="kpi-label">Calificados (A)</div>
+          <div class="kpi-value" id="kpiA">—</div>
+          <div class="kpi-sub">score ≥ 70</div>
+        </div>
+        <div class="kpi amber">
+          <div class="kpi-label">Medios (B)</div>
+          <div class="kpi-value" id="kpiB">—</div>
+          <div class="kpi-sub">score 45–69</div>
+        </div>
+        <div class="kpi red">
+          <div class="kpi-label">Score promedio</div>
+          <div class="kpi-value" id="kpiAvg">—</div>
+          <div class="kpi-sub">/ 100 pts</div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filters">
+        <button class="filter-btn active" onclick="setFilter('todos',this)">Todos</button>
+        <button class="filter-btn" onclick="setFilter('A',this)">🟢 Calificados</button>
+        <button class="filter-btn" onclick="setFilter('B',this)">🟡 Medios</button>
+        <button class="filter-btn" onclick="setFilter('C',this)">🔴 Descartar</button>
+        <button class="filter-btn" onclick="setFilter('rapido',this)">⚡ Form rápido</button>
+        <button class="filter-btn" onclick="setFilter('calificado',this)">◈ Intake completo</button>
+        <input class="search-box" type="text" id="searchBox" placeholder="Buscar nombre, email..." oninput="renderLeads()">
+      </div>
+
+      <!-- Lead list -->
+      <div id="leadList">
+        <div class="state-msg">
+          <div class="sm-icon">◌</div>
+          Cargando leads desde Google Sheets...
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ VIEW: PROYECTO ══ -->
+    <div class="view" id="view-proyecto">
+
+      <!-- Progress general -->
+      <div class="kpi-row" style="grid-template-columns:1fr;">
+        <div class="kpi blue" style="padding:16px 20px;">
+          <div class="kpi-label" style="margin-bottom:12px;">Progreso general del proyecto SG</div>
+          <div class="progress-track" style="height:4px;margin:0;">
+            <div class="progress-fill" style="width:62%;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:9px;color:var(--muted);">
+            <span>Inicio · Mar 2026</span><span style="color:var(--white);">62% completado</span><span>Deploy · Jun 2026</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-grid">
+        <div class="project-col">
+
+          <div class="task-card">
+            <div class="task-card-header">
+              <div class="task-card-title">Infraestructura digital</div>
+              <span class="task-status live">Live</span>
+            </div>
+            <div class="task-items">
+              <div class="task-item done" onclick="toggleTask(this)"><div class="task-check">✓</div>Landing page diseñada</div>
+              <div class="task-item done" onclick="toggleTask(this)"><div class="task-check">✓</div>Landing en Netlify</div>
+              <div class="task-item done" onclick="toggleTask(this)"><div class="task-check">✓</div>Form rápido funcionando</div>
+              <div class="task-item done" onclick="toggleTask(this)"><div class="task-check">✓</div>Intake 5 pasos (form-sg.netlify.app)</div>
+              <div class="task-item done" onclick="toggleTask(this)"><div class="task-check">✓</div>Dashboard interno (dashb-sg.netlify.app)</div>
+              <div class="task-item done" onclick="toggleTask(this)"><div class="task-check">✓</div>Google Sheets conectado</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>Verificar que datos caen al Sheet</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>Dominio sgarquitecturaarte.com</div>
+            </div>
+          </div>
+
+          <div class="task-card">
+            <div class="task-card-header">
+              <div class="task-card-title">Contenido y visual</div>
+              <span class="task-status wip">En proceso</span>
+            </div>
+            <div class="task-items">
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>Sesión fotográfica despacho</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>Fotos 3–4 proyectos terminados</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>Reemplazar placeholders en portafolio</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>Foto hero principal (facade o interior)</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>Video/reel para hero mobile</div>
+            </div>
+          </div>
+
+          <div class="task-card">
+            <div class="task-card-header">
+              <div class="task-card-title">Contenido Champion</div>
+              <span class="task-status wip">Activo</span>
+            </div>
+            <div class="task-items">
+              <div class="task-item done" onclick="toggleTask(this)"><div class="task-check">✓</div>TikTok bio — "Del albañil al arquitecto"</div>
+              <div class="task-item done" onclick="toggleTask(this)"><div class="task-check">✓</div>Escaletas video cimentación</div>
+              <div class="task-item done" onclick="toggleTask(this)"><div class="task-check">✓</div>Grid IG — identidad visual</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>3 videos pendientes (semáforo)</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>Calendario editorial semanal</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>Definir frecuencia semanal publicaciones</div>
+            </div>
+          </div>
+
+        </div>
+        <div class="project-col">
+
+          <div class="task-card">
+            <div class="task-card-header">
+              <div class="task-card-title">SEO + Performance</div>
+              <span class="task-status todo">Pendiente</span>
+            </div>
+            <div class="task-items">
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>Meta description landing</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>OG tags (Twitter/LinkedIn preview)</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>Google Search Console</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>favicon.ico + apple-touch-icon</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>Compresión imágenes WebP</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>sitemap.xml</div>
+            </div>
+          </div>
+
+          <div class="task-card">
+            <div class="task-card-header">
+              <div class="task-card-title">Mobile + UX</div>
+              <span class="task-status wip">En proceso</span>
+            </div>
+            <div class="task-items">
+              <div class="task-item done" onclick="toggleTask(this)"><div class="task-check">✓</div>Responsive básico landing</div>
+              <div class="task-item done" onclick="toggleTask(this)"><div class="task-check">✓</div>Responsive form intake</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>Hamburger menu mobile</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>Botón WhatsApp flotante</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>Pruebas en iOS Safari</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>Pruebas en Android Chrome</div>
+            </div>
+          </div>
+
+          <div class="task-card">
+            <div class="task-card-header">
+              <div class="task-card-title">Proyectos activos SG</div>
+              <span class="task-status live">En obra</span>
+            </div>
+            <div class="task-items">
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>Fachada Parque Celaya — escaleta ✓</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>Casa Mía (interiores) — finishing</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>KCRS El Magno — excavación</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>Casa Villagrán — diseño</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>Cancelería San Miguel — verde</div>
+              <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div>Techito Campo Real — activo</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ VIEW: INTEGRACIONES ══ -->
+    <div class="view" id="view-integraciones">
+
+      <div class="sh" style="margin-bottom:16px;">
+        <span class="sh-title">Integraciones activas y disponibles</span>
+      </div>
+
+      <div class="integ-grid">
+
+        <div class="integ-card">
+          <div class="integ-header">
+            <div class="integ-icon">⬡</div>
+            <div>
+              <div class="integ-name">Google Sheets</div>
+              <div class="integ-status">● Conectado via Apps Script</div>
+            </div>
+          </div>
+          <div class="integ-body">Base de datos de leads. Recibe datos del form rápido y del intake de 5 pasos. Columnas: Fecha, Nombre, Email, Tel, Score, Clasificación + 20+ campos de perfilamiento.</div>
+          <a href="https://docs.google.com/spreadsheets/d/1XwpOWF6r9qpwzGzrm5Kwo8b74l2VQZght81g0BxQN-Q" target="_blank" class="integ-btn connected">↗ Abrir Sheet</a>
+        </div>
+
+        <div class="integ-card">
+          <div class="integ-header">
+            <div class="integ-icon">⚙</div>
+            <div>
+              <div class="integ-name">Apps Script</div>
+              <div class="integ-status">● Webhook activo</div>
+            </div>
+          </div>
+          <div class="integ-body">Recibe POST del form, escribe en Sheets, manda email de alerta a SG con score A/B/C. Endpoint: AKfycbwxMKtRA7GRT8C...</div>
+          <a href="https://script.google.com/macros/s/AKfycbwxMKtRA7GRT8C-gg7V4piV6SrEYYTCZAxnbnmMfOpfj4vf4-tbhDeN13eHYvIBCu6rXw/exec" target="_blank" class="integ-btn connected">↗ Probar endpoint</a>
+        </div>
+
+        <div class="integ-card">
+          <div class="integ-header">
+            <div class="integ-icon">N</div>
+            <div>
+              <div class="integ-name">Notion</div>
+              <div class="integ-status">○ Pendiente de configurar</div>
+            </div>
+          </div>
+          <div class="integ-body">Pega aquí la URL de una página de Notion publicada como pública para verla embebida directamente en el dashboard. Útil para briefs, calendarios editoriales o documentos del cliente.</div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:12px;">
+            <input type="text" id="notionUrlInput" placeholder="https://notion.so/..." style="flex:1;background:rgba(255,255,255,0.04);border:0.5px solid var(--border2);color:var(--white);font-family:var(--mono);font-size:10px;padding:7px 10px;outline:none;">
+            <button class="integ-btn notion" onclick="loadNotionEmbed()">Cargar →</button>
+          </div>
+        </div>
+
+        <div class="integ-card">
+          <div class="integ-header">
+            <div class="integ-icon">☁</div>
+            <div>
+              <div class="integ-name">Netlify</div>
+              <div class="integ-status">● 3 sitios activos</div>
+            </div>
+          </div>
+          <div class="integ-body">Landing principal, form intake y este dashboard corren en Netlify. Deploys automáticos desde GitHub. Sin build command, HTML puro.</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
+            <a href="https://landing-sg.netlify.app" target="_blank" class="integ-btn action">Landing ↗</a>
+            <a href="https://form-sg.netlify.app" target="_blank" class="integ-btn action">Form ↗</a>
+            <a href="https://dashb-sg.netlify.app" target="_blank" class="integ-btn action">Dash ↗</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Notion embed area -->
+      <div class="notion-embed" style="margin-top:20px;" id="notionEmbedCard">
+        <div class="notion-toolbar">
+          <span style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);">Notion embed</span>
+          <span style="font-size:9px;color:var(--muted);flex:1;margin-left:8px;" id="notionEmbedUrl">Sin página cargada</span>
+          <button class="topbar-btn ghost" onclick="clearNotionEmbed()">✕</button>
+        </div>
+        <div id="notionEmbedArea">
+          <div class="notion-placeholder">
+            <div class="np-icon">N</div>
+            <span>Pega la URL de Notion arriba y haz clic en Cargar →</span>
+            <span style="font-size:9px;color:var(--muted);">La página debe estar publicada como pública en Notion</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══ VIEW: RECURSOS ══ -->
+    <div class="view" id="view-recursos">
+      <div class="sh"><span class="sh-title">Links rápidos del proyecto</span></div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+
+        <a href="https://landing-sg.netlify.app" target="_blank" style="text-decoration:none;">
+          <div class="integ-card" style="cursor:pointer;transition:border-color 0.15s;" onmouseenter="this.style.borderColor='var(--steel)'" onmouseleave="this.style.borderColor=''">
+            <div class="integ-name" style="margin-bottom:6px;">↗ Landing SG</div>
+            <div class="integ-body" style="margin-bottom:0;">landing-sg.netlify.app</div>
+          </div>
+        </a>
+
+        <a href="https://form-sg.netlify.app" target="_blank" style="text-decoration:none;">
+          <div class="integ-card" style="cursor:pointer;transition:border-color 0.15s;" onmouseenter="this.style.borderColor='var(--steel)'" onmouseleave="this.style.borderColor=''">
+            <div class="integ-name" style="margin-bottom:6px;">↗ Intake Form</div>
+            <div class="integ-body" style="margin-bottom:0;">form-sg.netlify.app</div>
+          </div>
+        </a>
+
+        <a href="https://docs.google.com/spreadsheets/d/1XwpOWF6r9qpwzGzrm5Kwo8b74l2VQZght81g0BxQN-Q" target="_blank" style="text-decoration:none;">
+          <div class="integ-card" style="cursor:pointer;transition:border-color 0.15s;" onmouseenter="this.style.borderColor='var(--steel)'" onmouseleave="this.style.borderColor=''">
+            <div class="integ-name" style="margin-bottom:6px;">⬡ Google Sheet</div>
+            <div class="integ-body" style="margin-bottom:0;">Hoja: Respuestas · 29 columnas</div>
+          </div>
+        </a>
+
+        <a href="https://script.google.com/macros/s/AKfycbwxMKtRA7GRT8C-gg7V4piV6SrEYYTCZAxnbnmMfOpfj4vf4-tbhDeN13eHYvIBCu6rXw/exec" target="_blank" style="text-decoration:none;">
+          <div class="integ-card" style="cursor:pointer;transition:border-color 0.15s;" onmouseenter="this.style.borderColor='var(--steel)'" onmouseleave="this.style.borderColor=''">
+            <div class="integ-name" style="margin-bottom:6px;">⚙ Apps Script</div>
+            <div class="integ-body" style="margin-bottom:0;">Webhook activo · doPost + doGet</div>
+          </div>
+        </a>
+
+        <a href="https://app.netlify.com" target="_blank" style="text-decoration:none;">
+          <div class="integ-card" style="cursor:pointer;transition:border-color 0.15s;" onmouseenter="this.style.borderColor='var(--steel)'" onmouseleave="this.style.borderColor=''">
+            <div class="integ-name" style="margin-bottom:6px;">☁ Netlify Dashboard</div>
+            <div class="integ-body" style="margin-bottom:0;">PDB Team · 3 proyectos activos</div>
+          </div>
+        </a>
+
+        <a href="https://github.com/Versiona26" target="_blank" style="text-decoration:none;">
+          <div class="integ-card" style="cursor:pointer;transition:border-color 0.15s;" onmouseenter="this.style.borderColor='var(--steel)'" onmouseleave="this.style.borderColor=''">
+            <div class="integ-name" style="margin-bottom:6px;">◎ GitHub</div>
+            <div class="integ-body" style="margin-bottom:0;">Versiona26 · repos SG</div>
+          </div>
+        </a>
+
+        <div class="integ-card">
+          <div class="integ-name" style="margin-bottom:6px;">◈ Apps Script URL</div>
+          <div class="integ-body" style="word-break:break-all;font-size:9px;margin-bottom:8px;">AKfycbwxMKtRA7GRT8C-gg7V4piV6SrEYYTCZAxnbnmMfOpfj4vf4-tbhDeN13eHYvIBCu6rXw</div>
+          <button class="integ-btn action" onclick="navigator.clipboard.writeText('https://script.google.com/macros/s/AKfycbwxMKtRA7GRT8C-gg7V4piV6SrEYYTCZAxnbnmMfOpfj4vf4-tbhDeN13eHYvIBCu6rXw/exec').then(()=>alert('URL copiada ✓'))">Copiar URL</button>
+        </div>
+
+        <div class="integ-card">
+          <div class="integ-name" style="margin-bottom:6px;">⬡ Sheet ID</div>
+          <div class="integ-body" style="word-break:break-all;font-size:9px;margin-bottom:8px;">1XwpOWF6r9qpwzGzrm5Kwo8b74l2VQZght81g0BxQN-Q</div>
+          <button class="integ-btn action" onclick="navigator.clipboard.writeText('1XwpOWF6r9qpwzGzrm5Kwo8b74l2VQZght81g0BxQN-Q').then(()=>alert('ID copiado ✓'))">Copiar ID</button>
+        </div>
+
+        <div class="integ-card">
+          <div class="integ-name" style="margin-bottom:6px;">📱 SG Instagram</div>
+          <div class="integ-body" style="margin-bottom:8px;">@sg_arquitecturarte · Plataforma principal de contenido Champion</div>
+          <a href="https://instagram.com/sg_arquitecturarte" target="_blank" class="integ-btn action">↗ Ver perfil</a>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /.content -->
+</div><!-- /.main -->
+</div><!-- /.app -->
+
+<script>
+// ══════════════════════════════════
+// CONFIG
+// ══════════════════════════════════
+const APPS_URL = 'https://script.google.com/macros/s/AKfycbwxMKtRA7GRT8C-gg7V4piV6SrEYYTCZAxnbnmMfOpfj4vf4-tbhDeN13eHYvIBCu6rXw/exec';
+
+// ══════════════════════════════════
+// STATE
+// ══════════════════════════════════
+let allLeads   = [];
+let activeFilter = 'todos';
+
+// ══════════════════════════════════
+// VIEW SWITCH
+// ══════════════════════════════════
+function switchView(id, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  btn.classList.add('active');
+  const titles = { leads:'Leads · SG Arquitectura', proyecto:'Proyecto · Estado general', integraciones:'Integraciones', recursos:'Recursos del proyecto' };
+  document.getElementById('topbarTitle').textContent = titles[id] || id;
+}
+
+// ══════════════════════════════════
+// LOAD LEADS — JSONP
+// ══════════════════════════════════
+function loadLeads() {
+  document.getElementById('leadList').innerHTML = '<div class="state-msg"><div class="sm-icon">◌</div>Cargando desde Google Sheets...</div>';
+  document.getElementById('lastUpdate').textContent = 'Actualizando...';
+
+  const cbName = '_vhCb_' + Date.now();
+  const old = document.getElementById('_vhScript');
+  if (old) old.remove();
+
+  const timeout = setTimeout(() => {
+    if (window[cbName]) {
+      delete window[cbName];
+      document.getElementById('leadList').innerHTML = '<div class="state-msg"><div class="sm-icon">⚠</div>Timeout — Apps Script tardó demasiado.<br>Verifica que el script esté publicado como "Cualquier persona".</div>';
+      document.getElementById('lastUpdate').textContent = 'Error de conexión';
+    }
+  }, 12000);
+
+  window[cbName] = function(data) {
+    clearTimeout(timeout);
+    const s = document.getElementById('_vhScript');
+    if (s) s.remove();
+    delete window[cbName];
+
+    if (!data || !data.prospects) {
+      document.getElementById('leadList').innerHTML = '<div class="state-msg"><div class="sm-icon">⚠</div>Sin datos. El Sheet puede estar vacío o el Apps Script devuelve un formato inesperado.</div>';
+      return;
+    }
+
+    allLeads = data.prospects;
+    updateKPIs();
+    renderLeads();
+    document.getElementById('sbLeadCount').textContent = allLeads.length;
+
+    // Health indicators
+    document.getElementById('hAppsScript').className = 'health-dot live';
+    document.getElementById('hSheets').className = allLeads.length > 0 ? 'health-dot live' : 'health-dot wip';
+
+    const now = new Date().toLocaleTimeString('es-MX', { hour:'2-digit', minute:'2-digit' });
+    document.getElementById('lastUpdate').textContent = 'Actualizado ' + now;
+  };
+
+  const script = document.createElement('script');
+  script.id  = '_vhScript';
+  script.src = APPS_URL + '?action=getProspects&callback=' + cbName;
+  script.onerror = () => {
+    clearTimeout(timeout);
+    if (window[cbName]) delete window[cbName];
+    document.getElementById('leadList').innerHTML = '<div class="state-msg"><div class="sm-icon">⚠</div>Error de red al conectar con Apps Script.</div>';
+    document.getElementById('lastUpdate').textContent = 'Sin conexión';
+  };
+  document.head.appendChild(script);
+}
+
+// ══════════════════════════════════
+// KPIs
+// ══════════════════════════════════
+function updateKPIs() {
+  const total  = allLeads.length;
+  const countA = allLeads.filter(p => tier(p) === 'A').length;
+  const countB = allLeads.filter(p => tier(p) === 'B').length;
+  const scores = allLeads.map(p => parseInt(p.score) || 0);
+  const avg    = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : 0;
+  document.getElementById('kpiTotal').textContent = total;
+  document.getElementById('kpiA').textContent     = countA;
+  document.getElementById('kpiB').textContent     = countB;
+  document.getElementById('kpiAvg').textContent   = avg;
+}
+
+function tier(p) {
+  const c = (p.clasificacion || '').trim().toUpperCase();
+  if (c.startsWith('A')) return 'A';
+  if (c.startsWith('B')) return 'B';
+  return 'C';
+}
+
+// ══════════════════════════════════
+// FILTER
+// ══════════════════════════════════
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderLeads();
+}
+
+// ══════════════════════════════════
+// RENDER LEADS
+// ══════════════════════════════════
+function renderLeads() {
+  const search = (document.getElementById('searchBox').value || '').toLowerCase();
+  const list   = document.getElementById('leadList');
+
+  let filtered = allLeads.filter(p => {
+    const t = tier(p);
+    const tl = (p.tipo_lead || '').toLowerCase();
+    if (activeFilter === 'A' && t !== 'A') return false;
+    if (activeFilter === 'B' && t !== 'B') return false;
+    if (activeFilter === 'C' && t !== 'C') return false;
+    if (activeFilter === 'rapido'     && !tl.includes('rapido'))     return false;
+    if (activeFilter === 'calificado' && !tl.includes('calificado')) return false;
+    if (search) {
+      const hay = ((p.nombre||'')+(p.apellido||'')+(p.email||'')).toLowerCase();
+      if (!hay.includes(search)) return false;
+    }
+    return true;
+  });
+
+  filtered.sort((a,b) => (parseInt(b.score)||0) - (parseInt(a.score)||0));
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="state-msg"><div class="sm-icon">◉</div>Sin leads para este filtro.</div>';
+    return;
+  }
+
+  list.className = 'lead-list';
+  list.innerHTML = filtered.map((p,i) => buildCard(p,i)).join('');
+}
+
+function buildCard(p, i) {
+  const t     = tier(p);
+  const score = parseInt(p.score) || 0;
+  const name  = ((p.nombre||'') + ' ' + (p.apellido||'')).trim() || (p.nombre||'Sin nombre');
+  const fecha = (p.fecha||'').split(',')[0] || '—';
+  const wa    = p.telefono ? 'https://wa.me/' + (p.telefono).replace(/\D/g,'') : '#';
+  const mail  = p.email ? 'mailto:' + p.email : '#';
+  const tl    = (p.tipo_lead||'rapido') === 'calificado' ? '◈ Intake' : '⚡ Rápido';
+
+  return `
+<div class="lead-row" id="lc${i}">
+  <div class="lead-header" onclick="toggleCard(${i})">
+    <div class="tier-badge ${t}">${t}</div>
+    <div>
+      <div class="lead-name">${name}</div>
+      <div class="lead-meta">${p.email||'—'} &nbsp;·&nbsp; ${tl}</div>
+    </div>
+    <div class="score-col">
+      <div class="score-num">${score} / 100</div>
+      <div class="score-bar"><div class="score-fill ${t}" style="width:${score}%"></div></div>
+    </div>
+    <div><span class="tier-tag ${t}">${t === 'A' ? 'Calificado' : t === 'B' ? 'Medio' : 'Descartar'}</span></div>
+    <div class="lead-date">${fecha}<br><span class="expand-icon">▼</span></div>
+  </div>
+  <div class="lead-detail">
+    <div class="detail-grid">
+      <div>
+        <div class="detail-section-title">// contacto</div>
+        ${drow('Email', p.email)}
+        ${drow('Tel / WA', p.telefono)}
+        ${drow('Tipo lead', p.tipo_lead)}
+        ${drow('Fuente', p.source)}
+        ${drow('Fecha', p.fecha)}
+      </div>
+      <div>
+        <div class="detail-section-title">// proyecto</div>
+        ${drow('Etapa', p.proyecto)}
+        ${drow('Inversión', p.inversion)}
+        ${drow('Terreno', p.terreno)}
+        ${drow('Terreno m²', p.terreno_m2)}
+        ${drow('Tiempo', p.tiempo)}
+        ${drow('Espacios', p.espacios)}
+        ${drow('Interiores', p.interiores)}
+      </div>
+      <div>
+        <div class="detail-section-title">// estilo</div>
+        ${drow('Estilo', p.estilo)}
+        ${drow('Ambiente', p.ambiente)}
+        ${drow('Colores', p.colores)}
+        ${drow('Texturas', p.texturas)}
+        ${drow('Arte', p.arte)}
+        ${drow('Prioridad', p.prioridad)}
+        ${drow('No quiere', p.no_quiero || p.mensaje)}
+      </div>
+    </div>
+    <div class="action-row">
+      ${p.telefono ? `<a class="action-btn wa" href="${wa}" target="_blank">↗ WhatsApp</a>` : ''}
+      ${p.email    ? `<a class="action-btn mail" href="${mail}">↗ Email</a>` : ''}
+      <button class="action-btn del" onclick="event.stopPropagation();removeCard(${i})">✕ Quitar</button>
+    </div>
+  </div>
+</div>`;
+}
+
+function drow(k, v) {
+  if (!v) return '';
+  return `<div class="detail-row"><span class="dk">${k}</span><span class="dv">${v}</span></div>`;
+}
+
+function toggleCard(i) {
+  document.getElementById('lc' + i).classList.toggle('expanded');
+}
+
+function removeCard(i) {
+  allLeads.splice(i, 1);
+  updateKPIs();
+  renderLeads();
+}
+
+// ══════════════════════════════════
+// TASKS TOGGLE
+// ══════════════════════════════════
+function toggleTask(item) {
+  item.classList.toggle('done');
+  item.querySelector('.task-check').textContent = item.classList.contains('done') ? '✓' : '';
+}
+
+// ══════════════════════════════════
+// NOTION EMBED
+// ══════════════════════════════════
+function loadNotionEmbed() {
+  const url = document.getElementById('notionUrlInput').value.trim();
+  if (!url) return;
+  document.getElementById('notionEmbedUrl').textContent = url;
+  document.getElementById('notionEmbedArea').innerHTML =
+    `<div class="notion-iframe-wrap"><iframe src="${url}" allowfullscreen></iframe></div>`;
+}
+
+function clearNotionEmbed() {
+  document.getElementById('notionEmbedUrl').textContent = 'Sin página cargada';
+  document.getElementById('notionEmbedArea').innerHTML =
+    `<div class="notion-placeholder"><div class="np-icon">N</div><span>Pega la URL de Notion arriba y haz clic en Cargar →</span></div>`;
+}
+
+// ══════════════════════════════════
+// INIT
+// ══════════════════════════════════
+loadLeads();
+// Auto-refresh cada 3 minutos
+setInterval(loadLeads, 3 * 60 * 1000);
+</script>
+</body>
+</html>
