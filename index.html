@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Serif:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--red:#A82132;--dark:#111111;--carbon:#222222;--mid:#3A3A3A;--white:#F5F6F7;--muted:#888;--mono:'IBM Plex Mono',monospace;--serif:'IBM Plex Serif',serif}
+:root{--red:#A82132;--dark:#111111;--carbon:#222222;--mid:#3A3A3A;--white:#F5F6F7;--muted:#888;--mono:"IBM Plex Mono",monospace;--serif:"IBM Plex Serif",serif}
 body{background:#0D0D0B;font-family:var(--mono);color:var(--white)}
 .sg-wrap{background:var(--dark);color:var(--white);font-family:var(--mono);width:100%}
 .sg-nav{display:flex;justify-content:space-between;align-items:center;padding:24px 40px;border-bottom:.5px solid rgba(245,246,247,.1)}
@@ -26,7 +26,7 @@ body{background:#0D0D0B;font-family:var(--mono);color:var(--white)}
 .sg-hero-actions{display:flex;align-items:center;gap:28px}
 .sg-btn-primary{background:var(--red);color:var(--white);font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:13px 28px;border:none;cursor:pointer;text-decoration:none;display:inline-block}
 .sg-btn-ghost{font-size:10px;letter-spacing:.1em;color:rgba(245,246,247,.4);text-decoration:none;display:flex;align-items:center;gap:8px}
-.sg-btn-ghost::after{content:'→'}
+.sg-btn-ghost::after{content:"→"}
 .sg-hero-right{position:relative;overflow:hidden;background:var(--carbon)}
 .sg-hero-img-placeholder{width:100%;height:100%;min-height:480px;background:linear-gradient(145deg,#1a1a1a 0%,#2a2020 50%,#1a1010 100%);display:flex;align-items:flex-end;padding:32px}
 .sg-hero-img-label{font-size:9px;letter-spacing:.15em;color:rgba(245,246,247,.18);text-transform:uppercase}
@@ -84,6 +84,7 @@ body{background:#0D0D0B;font-family:var(--mono);color:var(--white)}
 .sg-step-n{font-family:var(--serif);font-size:13px;font-weight:300;color:var(--red);opacity:.7;flex-shrink:0;width:28px;margin-top:2px}
 .sg-step-title{font-size:13px;font-weight:500;margin-bottom:8px}
 .sg-step-desc{font-size:11px;line-height:1.8;color:rgba(245,246,247,.42)}
+/* CTA */
 .sg-cta{display:grid;grid-template-columns:1fr 1fr;padding:80px 40px;gap:64px;align-items:start;border-top:.5px solid rgba(245,246,247,.07);background:var(--carbon)}
 .sg-cta-headline{font-family:var(--serif);font-size:clamp(26px,3.2vw,44px);font-weight:300;line-height:1.2}
 .sg-cta-headline em{color:var(--red);font-style:italic}
@@ -95,6 +96,14 @@ body{background:#0D0D0B;font-family:var(--mono);color:var(--white)}
 .sg-cta-submit{margin-top:8px;background:var(--red);border:none;padding:14px 28px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--white);cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:opacity .2s;width:100%}
 .sg-cta-submit:hover{opacity:.85}
 .sg-cta-submit:disabled{opacity:.5;cursor:not-allowed}
+/* BIFURCACION */
+.sg-bifurca{margin-top:28px;padding-top:24px;border-top:.5px solid rgba(245,246,247,.08)}
+.sg-bifurca-label{font-size:9px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:12px;display:block}
+.sg-bifurca-text{font-size:11px;line-height:1.7;color:rgba(245,246,247,.35);margin-bottom:16px}
+.sg-bifurca-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:13px 20px;background:none;border:.5px solid rgba(245,246,247,.15);font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(245,246,247,.5);text-decoration:none;transition:all .2s;cursor:pointer}
+.sg-bifurca-btn:hover{border-color:var(--red);color:var(--white)}
+.sg-bifurca-btn span:last-child{color:var(--red)}
+/* footer */
 .sg-footer{display:flex;justify-content:space-between;align-items:center;padding:24px 40px;border-top:.5px solid rgba(245,246,247,.07)}
 .sg-footer-logo{font-size:12px;font-weight:500;letter-spacing:.08em}.sg-footer-logo span{color:var(--red)}
 .sg-footer-copy{font-size:9px;letter-spacing:.1em;color:rgba(245,246,247,.15);text-transform:uppercase}
@@ -118,6 +127,46 @@ body{background:#0D0D0B;font-family:var(--mono);color:var(--white)}
   .sg-cta{grid-template-columns:1fr;gap:40px;padding:56px 24px}
   .sg-footer{flex-direction:column;gap:12px;text-align:center;padding:24px}
   .sg-section-header{padding:32px 24px 0}
+}
+
+/* ── BIFURCACIÓN ── */
+.sg-bifurcacion {
+  margin-bottom: 28px;
+  padding-bottom: 28px;
+  border-bottom: 0.5px solid rgba(245,246,247,0.08);
+}
+.sg-bif-label {
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.sg-bif-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border: 0.5px solid rgba(168,33,50,0.35);
+  text-decoration: none;
+  transition: all 0.2s;
+  gap: 16px;
+}
+.sg-bif-btn:hover {
+  border-color: var(--red);
+  background: rgba(168,33,50,0.06);
+}
+.sg-bif-btn span:first-child {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--white);
+  letter-spacing: 0.04em;
+}
+.sg-bif-tag {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--red);
+  white-space: nowrap;
 }
 </style>
 </head>
@@ -208,12 +257,15 @@ body{background:#0D0D0B;font-family:var(--mono);color:var(--white)}
     </div>
   </section>
 
+  <!-- CTA CON BIFURCACIÓN -->
   <section class="sg-cta" id="cta">
     <div>
       <h2 class="sg-cta-headline">Cada proyecto empieza<br>con una <em>buena conversación.</em></h2>
     </div>
     <div>
       <p class="sg-cta-text">Cuéntanos qué tienes en mente. En menos de 48 horas te respondemos y agendamos una primera llamada sin compromiso.</p>
+
+      <!-- FORM RÁPIDO -->
       <form class="sg-cta-form" id="sgForm">
         <input type="text"  name="nombre"   placeholder="Nombre completo" required>
         <input type="email" name="email"    placeholder="Correo electrónico" required>
@@ -221,11 +273,22 @@ body{background:#0D0D0B;font-family:var(--mono);color:var(--white)}
         <input type="text"  name="proyecto" placeholder="¿En qué etapa está tu proyecto?">
         <textarea           name="mensaje"  rows="2" placeholder="Cuéntanos un poco más..."></textarea>
         <input type="hidden" name="source"    value="landing_sg">
+        <input type="hidden" name="tipo_lead" value="rapido">
         <input type="hidden" name="timestamp" id="tsField">
         <button type="submit" class="sg-cta-submit" id="sgBtn">
-          <span id="btnTxt">Enviar mensaje</span><span>→</span>
+          <span id="btnTxt">Quiero que me contacten</span><span>→</span>
         </button>
       </form>
+
+      <!-- BIFURCACIÓN -->
+      <div class="sg-bifurca">
+        <span class="sg-bifurca-label">¿Tienes el proyecto más definido?</span>
+        <p class="sg-bifurca-text">Si quieres que preparemos una propuesta más precisa desde el inicio, completa el formulario detallado. 5 minutos que hacen la diferencia.</p>
+        <a href="form.html" class="sg-bifurca-btn">
+          <span>Quiero avanzar con mi proyecto</span>
+          <span>→ 5 min</span>
+        </a>
+      </div>
     </div>
   </section>
 
@@ -237,59 +300,56 @@ body{background:#0D0D0B;font-family:var(--mono);color:var(--white)}
 
 </div>
 <script>
-const APPS_URL = 'https://script.google.com/macros/s/AKfycbzDLk_QQLh6dQt4stdP1fBd367f7yWo0K6EbBZth2kn4pVW6RG-Sk0H9fxlJSLE-eDkFg/exec';
+const APPS_URL = "https://script.google.com/macros/s/AKfycbwxMKtRA7GRT8C-gg7V4piV6SrEYYTCZAxnbnmMfOpfj4vf4-tbhDeN13eHYvIBCu6rXw/exec";
 
-// Filtros portafolio
-document.querySelectorAll('.sg-filter').forEach(btn => {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('.sg-filter').forEach(b => b.classList.remove('active'));
-    this.classList.add('active');
+document.querySelectorAll(".sg-filter").forEach(btn => {
+  btn.addEventListener("click", function() {
+    document.querySelectorAll(".sg-filter").forEach(b => b.classList.remove("active"));
+    this.classList.add("active");
     const f = this.dataset.filter;
-    document.querySelectorAll('.sg-port-item').forEach(item => {
-      item.style.display = (f === 'todos' || item.dataset.tipo === f) ? '' : 'none';
+    document.querySelectorAll(".sg-port-item").forEach(item => {
+      item.style.display = (f === "todos" || item.dataset.tipo === f) ? "" : "none";
     });
   });
 });
 
-// Smooth scroll
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', function(e) {
-    const t = document.querySelector(this.getAttribute('href'));
-    if (t) { e.preventDefault(); t.scrollIntoView({ behavior:'smooth', block:'start' }); }
+document.querySelectorAll("a[href^='#']").forEach(a => {
+  a.addEventListener("click", function(e) {
+    const t = document.querySelector(this.getAttribute("href"));
+    if (t) { e.preventDefault(); t.scrollIntoView({ behavior:"smooth", block:"start" }); }
   });
 });
 
-// Form submit via iframe (evita CORS, redirige a gracias.html)
-document.getElementById('sgForm').addEventListener('submit', function(e) {
+document.getElementById("sgForm").addEventListener("submit", function(e) {
   e.preventDefault();
-  document.getElementById('tsField').value = new Date().toISOString();
-  const btn = document.getElementById('sgBtn');
-  const txt = document.getElementById('btnTxt');
+  document.getElementById("tsField").value = new Date().toISOString();
+  const btn = document.getElementById("sgBtn");
+  const txt = document.getElementById("btnTxt");
   btn.disabled = true;
-  txt.textContent = 'Enviando...';
+  txt.textContent = "Enviando...";
 
-  const iName = 'sg_if_' + Date.now();
-  const iframe = document.createElement('iframe');
+  const iName = "sg_if_" + Date.now();
+  const iframe = document.createElement("iframe");
   iframe.name = iName;
-  iframe.style.display = 'none';
+  iframe.style.display = "none";
   document.body.appendChild(iframe);
 
-  const hForm = document.createElement('form');
-  hForm.method = 'POST';
+  const hForm = document.createElement("form");
+  hForm.method = "POST";
   hForm.action = APPS_URL;
   hForm.target = iName;
-  hForm.style.display = 'none';
+  hForm.style.display = "none";
 
   new FormData(this).forEach((v, k) => {
-    const i = document.createElement('input');
-    i.type = 'hidden'; i.name = k; i.value = v;
+    const i = document.createElement("input");
+    i.type = "hidden"; i.name = k; i.value = v;
     hForm.appendChild(i);
   });
 
   document.body.appendChild(hForm);
   hForm.submit();
 
-  setTimeout(() => { window.location.href = 'gracias.html'; }, 1500);
+  setTimeout(() => { window.location.href = "gracias.html"; }, 1500);
   setTimeout(() => { hForm.remove(); iframe.remove(); }, 6000);
 });
 </script>
