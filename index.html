@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SG Arquitectura — Espacios que llevan tu vida adentro</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Serif:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--red:#A82132;--dark:#111111;--carbon:#222222;--mid:#3A3A3A;--white:#F5F6F7;--muted:#888;--mono:'IBM Plex Mono',monospace;--serif:'IBM Plex Serif',serif}
+body{background:#0D0D0B;font-family:var(--mono);color:var(--white)}
+.sg-wrap{background:var(--dark);color:var(--white);font-family:var(--mono);width:100%}
+.sg-nav{display:flex;justify-content:space-between;align-items:center;padding:24px 40px;border-bottom:.5px solid rgba(245,246,247,.1)}
+.sg-logo{font-size:13px;font-weight:500;letter-spacing:.08em}.sg-logo span{color:var(--red)}
+.sg-nav-links{display:flex;gap:28px;list-style:none}
+.sg-nav-links a{font-size:10px;letter-spacing:.12em;color:rgba(245,246,247,.45);text-decoration:none;text-transform:uppercase;transition:color .2s}
+.sg-nav-links a:hover{color:var(--white)}
+.sg-nav-cta{font-size:10px;letter-spacing:.1em;color:var(--red);border:.5px solid var(--red);padding:7px 18px;text-decoration:none;text-transform:uppercase;transition:all .2s}
+.sg-nav-cta:hover{background:var(--red);color:var(--white)}
+.sg-hero{min-height:80vh;display:grid;grid-template-columns:1fr 1fr;position:relative}
+.sg-hero-left{padding:72px 40px;display:flex;flex-direction:column;justify-content:flex-end}
+.sg-hero-eyebrow{font-size:10px;letter-spacing:.18em;color:var(--red);text-transform:uppercase;margin-bottom:28px}
+.sg-hero-h1{font-family:var(--serif);font-size:clamp(36px,4.5vw,64px);font-weight:300;font-style:italic;line-height:1.1;margin-bottom:16px}
+.sg-hero-h1 strong{font-style:normal;font-weight:400;display:block}
+.sg-hero-sub{font-size:11px;line-height:1.85;color:rgba(245,246,247,.5);max-width:320px;margin-bottom:44px;letter-spacing:.03em}
+.sg-hero-actions{display:flex;align-items:center;gap:28px}
+.sg-btn-primary{background:var(--red);color:var(--white);font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:13px 28px;border:none;cursor:pointer;text-decoration:none;display:inline-block}
+.sg-btn-ghost{font-size:10px;letter-spacing:.1em;color:rgba(245,246,247,.4);text-decoration:none;display:flex;align-items:center;gap:8px}
+.sg-btn-ghost::after{content:'→'}
+.sg-hero-right{position:relative;overflow:hidden;background:var(--carbon)}
+.sg-hero-img-placeholder{width:100%;height:100%;min-height:480px;background:linear-gradient(145deg,#1a1a1a 0%,#2a2020 50%,#1a1010 100%);display:flex;align-items:flex-end;padding:32px}
+.sg-hero-img-label{font-size:9px;letter-spacing:.15em;color:rgba(245,246,247,.18);text-transform:uppercase}
+.sg-hero-num{position:absolute;top:40px;right:32px;font-family:var(--serif);font-size:120px;font-weight:300;color:rgba(168,33,50,.07);line-height:1;user-select:none}
+.sg-hero-stat-strip{position:absolute;bottom:0;left:0;right:0;display:grid;grid-template-columns:1fr 1fr;border-top:.5px solid rgba(245,246,247,.07)}
+.sg-stat{padding:20px 32px;border-right:.5px solid rgba(245,246,247,.07)}
+.sg-stat:last-child{border-right:none}
+.sg-stat-num{font-family:var(--serif);font-size:26px;font-weight:300;display:block;margin-bottom:3px}
+.sg-stat-label{font-size:9px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+.sg-manifesto{display:grid;grid-template-columns:180px 1fr;padding:80px 40px;gap:64px;align-items:start;border-top:.5px solid rgba(245,246,247,.07)}
+.sg-manifesto-label{font-size:9px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;padding-top:6px}
+.sg-manifesto-body{display:flex;flex-direction:column;gap:32px}
+.sg-manifesto-quote{font-family:var(--serif);font-size:clamp(20px,2.5vw,32px);font-weight:300;line-height:1.45}
+.sg-manifesto-quote em{color:var(--red);font-style:italic}
+.sg-manifesto-text{font-size:11px;line-height:1.95;color:rgba(245,246,247,.42);max-width:540px;letter-spacing:.02em}
+.sg-tag-row{display:flex;gap:10px;flex-wrap:wrap}
+.sg-tag{font-size:9px;letter-spacing:.1em;text-transform:uppercase;border:.5px solid rgba(245,246,247,.15);padding:5px 12px;color:rgba(245,246,247,.38)}
+.sg-services{border-top:.5px solid rgba(245,246,247,.07);padding-bottom:80px}
+.sg-section-header{display:flex;justify-content:space-between;align-items:baseline;padding:40px 40px 0}
+.sg-section-title{font-size:9px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase}
+.sg-section-count{font-size:9px;letter-spacing:.1em;color:rgba(245,246,247,.2)}
+.sg-services-grid{display:grid;grid-template-columns:repeat(3,1fr)}
+.sg-service-item{padding:40px;border-right:.5px solid rgba(245,246,247,.07);border-top:.5px solid rgba(245,246,247,.07);cursor:pointer;transition:background .2s}
+.sg-service-item:last-child{border-right:none}
+.sg-service-item:hover{background:rgba(255,255,255,.02)}
+.sg-service-num{font-family:var(--serif);font-size:32px;font-weight:300;color:rgba(168,33,50,.25);display:block;margin-bottom:16px}
+.sg-service-name{font-size:13px;font-weight:500;margin-bottom:10px;letter-spacing:.02em}
+.sg-service-desc{font-size:11px;line-height:1.75;color:rgba(245,246,247,.42)}
+.sg-service-arrow{display:block;margin-top:20px;color:var(--muted);font-size:14px;transition:transform .2s}
+.sg-service-item:hover .sg-service-arrow{transform:translateX(4px);color:var(--red)}
+.sg-portfolio{border-top:.5px solid rgba(245,246,247,.07);padding-bottom:80px}
+.sg-portfolio-header{display:flex;justify-content:space-between;align-items:center;padding:40px 40px 32px}
+.sg-portfolio-filters{display:flex;gap:4px}
+.sg-filter{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:6px 14px;background:none;border:.5px solid rgba(245,246,247,.12);color:rgba(245,246,247,.38);cursor:pointer;transition:all .2s}
+.sg-filter.active{border-color:var(--red);color:var(--red)}
+.sg-portfolio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(245,246,247,.06);padding:0 1px}
+.sg-port-item{position:relative;aspect-ratio:4/3;overflow:hidden;cursor:pointer;background:var(--mid)}
+.sg-port-bg{position:absolute;inset:0;transition:transform .5s}
+.sg-port-item:hover .sg-port-bg{transform:scale(1.04)}
+.bg-p1{background:linear-gradient(135deg,#2a2018,#3a3020)}
+.bg-p2{background:linear-gradient(135deg,#1a2028,#202830)}
+.bg-p3{background:linear-gradient(135deg,#201818,#302020)}
+.bg-p4{background:linear-gradient(135deg,#182018,#202820)}
+.bg-p5{background:linear-gradient(135deg,#201820,#302030)}
+.bg-p6{background:linear-gradient(135deg,#182018,#283828)}
+.sg-port-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(17,17,17,.85) 0%,transparent 55%);display:flex;align-items:flex-end;padding:20px;opacity:0;transition:opacity .3s}
+.sg-port-item:hover .sg-port-overlay{opacity:1}
+.sg-port-name{font-size:12px;font-weight:500}
+.sg-port-type{font-size:9px;letter-spacing:.1em;color:var(--muted);margin-top:2px;text-transform:uppercase}
+.sg-process{display:grid;grid-template-columns:200px 1fr;padding:80px 40px;gap:64px;align-items:start;border-top:.5px solid rgba(245,246,247,.07)}
+.sg-process-label{font-size:9px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;padding-top:6px}
+.sg-process-steps{display:flex;flex-direction:column}
+.sg-step{display:flex;gap:28px;padding:28px 0;border-bottom:.5px solid rgba(245,246,247,.07)}
+.sg-step:last-child{border-bottom:none}
+.sg-step-n{font-family:var(--serif);font-size:13px;font-weight:300;color:var(--red);opacity:.7;flex-shrink:0;width:28px;margin-top:2px}
+.sg-step-title{font-size:13px;font-weight:500;margin-bottom:8px}
+.sg-step-desc{font-size:11px;line-height:1.8;color:rgba(245,246,247,.42)}
+.sg-cta{display:grid;grid-template-columns:1fr 1fr;padding:80px 40px;gap:64px;align-items:start;border-top:.5px solid rgba(245,246,247,.07);background:var(--carbon)}
+.sg-cta-headline{font-family:var(--serif);font-size:clamp(26px,3.2vw,44px);font-weight:300;line-height:1.2}
+.sg-cta-headline em{color:var(--red);font-style:italic}
+.sg-cta-text{font-size:11px;line-height:1.85;color:rgba(245,246,247,.42);margin-bottom:24px}
+.sg-cta-form{display:flex;flex-direction:column;gap:16px}
+.sg-cta-form input,.sg-cta-form textarea{background:rgba(245,246,247,.04);border:none;border-bottom:.5px solid rgba(245,246,247,.12);padding:12px 0;font-family:var(--mono);font-size:11px;color:var(--white);outline:none;transition:border-color .2s;width:100%}
+.sg-cta-form input:focus,.sg-cta-form textarea:focus{border-color:var(--red)}
+.sg-cta-form input::placeholder,.sg-cta-form textarea::placeholder{color:rgba(245,246,247,.25)}
+.sg-cta-submit{margin-top:8px;background:var(--red);border:none;padding:14px 28px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--white);cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:opacity .2s;width:100%}
+.sg-cta-submit:hover{opacity:.85}
+.sg-cta-submit:disabled{opacity:.5;cursor:not-allowed}
+.sg-footer{display:flex;justify-content:space-between;align-items:center;padding:24px 40px;border-top:.5px solid rgba(245,246,247,.07)}
+.sg-footer-logo{font-size:12px;font-weight:500;letter-spacing:.08em}.sg-footer-logo span{color:var(--red)}
+.sg-footer-copy{font-size:9px;letter-spacing:.1em;color:rgba(245,246,247,.15);text-transform:uppercase}
+.sg-footer-ig{font-size:9px;letter-spacing:.1em;color:rgba(245,246,247,.28);text-decoration:none;text-transform:uppercase;transition:color .2s}
+.sg-footer-ig:hover{color:var(--white)}
+@media(max-width:768px){
+  .sg-nav{flex-wrap:wrap;gap:16px;padding:20px 24px}
+  .sg-nav-links{display:none}
+  .sg-hero{grid-template-columns:1fr}
+  .sg-hero-right{display:none}
+  .sg-hero-left{padding:48px 24px}
+  .sg-hero-stat-strip{position:static;grid-template-columns:1fr 1fr}
+  .sg-manifesto{grid-template-columns:1fr;gap:24px;padding:56px 24px}
+  .sg-manifesto-label{display:none}
+  .sg-services-grid{grid-template-columns:1fr}
+  .sg-service-item{border-right:none}
+  .sg-portfolio-grid{grid-template-columns:1fr 1fr}
+  .sg-portfolio-header{flex-direction:column;gap:16px;align-items:flex-start;padding:32px 24px 24px}
+  .sg-process{grid-template-columns:1fr;gap:24px;padding:56px 24px}
+  .sg-process-label{display:none}
+  .sg-cta{grid-template-columns:1fr;gap:40px;padding:56px 24px}
+  .sg-footer{flex-direction:column;gap:12px;text-align:center;padding:24px}
+  .sg-section-header{padding:32px 24px 0}
+}
+</style>
+</head>
+<body>
+<div class="sg-wrap">
+
+  <nav class="sg-nav">
+    <div class="sg-logo">SG<span>_</span>Arquitectura Arte</div>
+    <ul class="sg-nav-links">
+      <li><a href="#hero">Proyectos</a></li>
+      <li><a href="#proceso">Proceso</a></li>
+      <li><a href="#estudio">Estudio</a></li>
+      <li><a href="#cta">Contacto</a></li>
+    </ul>
+    <a href="#cta" class="sg-nav-cta">Iniciar proyecto</a>
+  </nav>
+
+  <section class="sg-hero" id="hero">
+    <div class="sg-hero-left">
+      <div class="sg-hero-eyebrow">Despacho de arquitectura — Guanajuato, MX</div>
+      <h1 class="sg-hero-h1">Espacios que<br><strong>llevan tu vida</strong> adentro.</h1>
+      <p class="sg-hero-sub">Diseñamos y construimos casas a medida. Cada decisión tiene una razón. Cada espacio, una historia que empieza contigo.</p>
+      <div class="sg-hero-actions">
+        <a href="#cta" class="sg-btn-primary">Cuéntanos tu proyecto</a>
+        <a href="#portafolio" class="sg-btn-ghost">Ver portafolio</a>
+      </div>
+    </div>
+    <div class="sg-hero-right">
+      <div class="sg-hero-img-placeholder"><span class="sg-hero-img-label">← Foto flagship del despacho</span></div>
+      <div class="sg-hero-num">10</div>
+    </div>
+    <div class="sg-hero-stat-strip">
+      <div class="sg-stat"><span class="sg-stat-num">10+</span><span class="sg-stat-label">Años de experiencia</span></div>
+      <div class="sg-stat"><span class="sg-stat-num">Casa → Obra</span><span class="sg-stat-label">Acompañamiento completo</span></div>
+    </div>
+  </section>
+
+  <section class="sg-manifesto" id="estudio">
+    <div class="sg-manifesto-label">El estudio</div>
+    <div class="sg-manifesto-body">
+      <p class="sg-manifesto-quote">Construimos espacios con <em>intención</em>, no solo con metros cuadrados.</p>
+      <p class="sg-manifesto-text">SG Arquitectura Arte es un despacho de diseño y construcción con más de 10 años resolviendo proyectos residenciales en México. Trabajamos desde el concepto hasta la obra terminada — con presupuestos claros, procesos transparentes y el mismo compromiso en cada proyecto.</p>
+      <div class="sg-tag-row">
+        <span class="sg-tag">Arquitectura residencial</span>
+        <span class="sg-tag">Diseño de interiores</span>
+        <span class="sg-tag">Construcción</span>
+        <span class="sg-tag">Paisajismo</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="sg-services">
+    <div class="sg-section-header"><span class="sg-section-title">Servicios</span><span class="sg-section-count">03 ámbitos</span></div>
+    <div class="sg-services-grid">
+      <div class="sg-service-item"><span class="sg-service-num">01</span><div class="sg-service-name">Proyecto Ejecutivo + Construcción</div><p class="sg-service-desc">De los planos a la llave en mano. Coordinamos diseño, ingeniería y obra con un solo equipo.</p><span class="sg-service-arrow">→</span></div>
+      <div class="sg-service-item"><span class="sg-service-num">02</span><div class="sg-service-name">Diseño de Interiores</div><p class="sg-service-desc">Espacios que reflejan cómo vives, no tendencias del año. Funcionalidad y estética, sin elegir.</p><span class="sg-service-arrow">→</span></div>
+      <div class="sg-service-item"><span class="sg-service-num">03</span><div class="sg-service-name">Remodelación</div><p class="sg-service-desc">Carpintería, herrería, impermeabilización, pérgolas. Lo que tu espacio necesita para evolucionar.</p><span class="sg-service-arrow">→</span></div>
+    </div>
+  </section>
+
+  <section class="sg-portfolio" id="portafolio">
+    <div class="sg-portfolio-header">
+      <span class="sg-section-title">Proyectos seleccionados</span>
+      <div class="sg-portfolio-filters">
+        <button class="sg-filter active" data-filter="todos">Todos</button>
+        <button class="sg-filter" data-filter="residencial">Residencial</button>
+        <button class="sg-filter" data-filter="interiores">Interiores</button>
+        <button class="sg-filter" data-filter="remodelacion">Remodelación</button>
+      </div>
+    </div>
+    <div class="sg-portfolio-grid">
+      <div class="sg-port-item" data-tipo="residencial"><div class="sg-port-bg bg-p1"></div><div class="sg-port-overlay"><div><div class="sg-port-name">Casa Roble</div><div class="sg-port-type">Residencial · 320 m²</div></div></div></div>
+      <div class="sg-port-item" data-tipo="interiores"><div class="sg-port-bg bg-p2"></div><div class="sg-port-overlay"><div><div class="sg-port-name">Estudio Mineral</div><div class="sg-port-type">Interiores · León</div></div></div></div>
+      <div class="sg-port-item" data-tipo="remodelacion"><div class="sg-port-bg bg-p3"></div><div class="sg-port-overlay"><div><div class="sg-port-name">Terraza Norte</div><div class="sg-port-type">Remodelación · Gto</div></div></div></div>
+      <div class="sg-port-item" data-tipo="residencial"><div class="sg-port-bg bg-p4"></div><div class="sg-port-overlay"><div><div class="sg-port-name">Residencia Cantera</div><div class="sg-port-type">Residencial · 480 m²</div></div></div></div>
+      <div class="sg-port-item" data-tipo="interiores"><div class="sg-port-bg bg-p5"></div><div class="sg-port-overlay"><div><div class="sg-port-name">Cocina Volcánica</div><div class="sg-port-type">Interiores · San Miguel</div></div></div></div>
+      <div class="sg-port-item" data-tipo="remodelacion"><div class="sg-port-bg bg-p6"></div><div class="sg-port-overlay"><div><div class="sg-port-name">Casa Jardín</div><div class="sg-port-type">Paisajismo + Construcción</div></div></div></div>
+    </div>
+  </section>
+
+  <section class="sg-process" id="proceso">
+    <div class="sg-process-label">Cómo trabajamos</div>
+    <div class="sg-process-steps">
+      <div class="sg-step"><span class="sg-step-n">01.</span><div><div class="sg-step-title">Cuéntanos tu proyecto</div><p class="sg-step-desc">Antes de la primera llamada, llenás un formulario breve que nos ayuda a entender qué buscás, cómo vivís y qué tan avanzado está tu proyecto. No perdemos tu tiempo ni el nuestro.</p></div></div>
+      <div class="sg-step"><span class="sg-step-n">02.</span><div><div class="sg-step-title">Primera reunión con propósito</div><p class="sg-step-desc">Llegamos preparados. Sabemos lo básico, así que el tiempo lo usamos en lo que importa: diseñar juntos la visión, resolver dudas reales y definir si hay match.</p></div></div>
+      <div class="sg-step"><span class="sg-step-n">03.</span><div><div class="sg-step-title">Propuesta clara, sin letras chicas</div><p class="sg-step-desc">Presupuesto con rangos reales, alcance definido y tiempos acordados. Sin sorpresas en el camino.</p></div></div>
+      <div class="sg-step"><span class="sg-step-n">04.</span><div><div class="sg-step-title">Diseño y construcción acompañada</div><p class="sg-step-desc">Desde los planos hasta la última mano de pintura. Te informamos en cada etapa y tomamos decisiones juntos cuando algo cambia.</p></div></div>
+    </div>
+  </section>
+
+  <section class="sg-cta" id="cta">
+    <div>
+      <h2 class="sg-cta-headline">Cada proyecto empieza<br>con una <em>buena conversación.</em></h2>
+    </div>
+    <div>
+      <p class="sg-cta-text">Cuéntanos qué tienes en mente. En menos de 48 horas te respondemos y agendamos una primera llamada sin compromiso.</p>
+      <form class="sg-cta-form" id="sgForm">
+        <input type="text"  name="nombre"   placeholder="Nombre completo" required>
+        <input type="email" name="email"    placeholder="Correo electrónico" required>
+        <input type="text"  name="telefono" placeholder="WhatsApp (opcional)">
+        <input type="text"  name="proyecto" placeholder="¿En qué etapa está tu proyecto?">
+        <textarea           name="mensaje"  rows="2" placeholder="Cuéntanos un poco más..."></textarea>
+        <input type="hidden" name="source"    value="landing_sg">
+        <input type="hidden" name="timestamp" id="tsField">
+        <button type="submit" class="sg-cta-submit" id="sgBtn">
+          <span id="btnTxt">Enviar mensaje</span><span>→</span>
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <footer class="sg-footer">
+    <div class="sg-footer-logo">SG<span>_</span>Arquitectura Arte</div>
+    <span class="sg-footer-copy">© 2026 — Guanajuato, México</span>
+    <a href="https://instagram.com/sg_arquitecturarte" class="sg-footer-ig">@sg_arquitecturarte</a>
+  </footer>
+
+</div>
+<script>
+const APPS_URL = 'https://script.google.com/macros/s/AKfycbzDLk_QQLh6dQt4stdP1fBd367f7yWo0K6EbBZth2kn4pVW6RG-Sk0H9fxlJSLE-eDkFg/exec';
+
+// Filtros portafolio
+document.querySelectorAll('.sg-filter').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.sg-filter').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    const f = this.dataset.filter;
+    document.querySelectorAll('.sg-port-item').forEach(item => {
+      item.style.display = (f === 'todos' || item.dataset.tipo === f) ? '' : 'none';
+    });
+  });
+});
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', function(e) {
+    const t = document.querySelector(this.getAttribute('href'));
+    if (t) { e.preventDefault(); t.scrollIntoView({ behavior:'smooth', block:'start' }); }
+  });
+});
+
+// Form submit via iframe (evita CORS, redirige a gracias.html)
+document.getElementById('sgForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  document.getElementById('tsField').value = new Date().toISOString();
+  const btn = document.getElementById('sgBtn');
+  const txt = document.getElementById('btnTxt');
+  btn.disabled = true;
+  txt.textContent = 'Enviando...';
+
+  const iName = 'sg_if_' + Date.now();
+  const iframe = document.createElement('iframe');
+  iframe.name = iName;
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+
+  const hForm = document.createElement('form');
+  hForm.method = 'POST';
+  hForm.action = APPS_URL;
+  hForm.target = iName;
+  hForm.style.display = 'none';
+
+  new FormData(this).forEach((v, k) => {
+    const i = document.createElement('input');
+    i.type = 'hidden'; i.name = k; i.value = v;
+    hForm.appendChild(i);
+  });
+
+  document.body.appendChild(hForm);
+  hForm.submit();
+
+  setTimeout(() => { window.location.href = 'gracias.html'; }, 1500);
+  setTimeout(() => { hForm.remove(); iframe.remove(); }, 6000);
+});
+</script>
+</body>
+</html>
